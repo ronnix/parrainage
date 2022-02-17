@@ -100,7 +100,7 @@ python manage.py createsuperuser
 ### Lancer un serveur local
 
 ```
-python manage.py runserver
+ALLOWED_HOSTS=127.0.0.1 python manage.py runserver
 ```
 
 
