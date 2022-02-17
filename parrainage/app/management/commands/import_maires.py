@@ -34,10 +34,17 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
+        print("Ajout des maires")
         for chunk in ichunked(read_tsv(kwargs["maires"]), kwargs["chunk_size"]):
+            print(".", end="")
             with transaction.atomic():
                 Elu.objects.bulk_create(parse_elu(row, role="M") for row in chunk)
+        print()
 
+        print(f"Mise à jour des coordonnées")
         csv_mairies = read_csv(kwargs["mairies"])
-        for row in csv_mairies:
+        for i, row in enumerate(csv_mairies):
+            if i % 100 == 0:
+                print(".", end="")
             met_a_jour_coordonnees_elus(row)
+        print()
