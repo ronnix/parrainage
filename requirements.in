@@ -2,4 +2,5 @@ Django>=1.11,<2.0
 dj-database-url
 dj-static
 gunicorn
+more-itertools
 psycopg2-binary<2.9
