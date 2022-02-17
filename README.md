@@ -42,10 +42,16 @@ python manage.py migrate
 #### Liste des maires
 
 - Récupérer `rne-maires.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/2876a346-d50c-4911-934e-19ee07b0e503
+```
 
 - Récupérer `mairies.csv` depuis https://www.data.gouv.fr/fr/datasets/service-public-fr-annuaire-de-l-administration-base-de-donnees-locales/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/953465b8-35a3-4e54-89cd-0b9766503ff9
+```
 
-- Lancer la commande (ça peut être long...) :
+- Lancer la commande (ça peut être long…) :
 ```
 python manage.py import_maires rne-maires.csv mairies.csv
 ```
@@ -53,8 +59,11 @@ python manage.py import_maires rne-maires.csv mairies.csv
 #### Liste des conseillers départementaux
 
 - Récupérer `rne-cd.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/601ef073-d986-4582-8e1a-ed14dc857fba
+```
 
-- Lancer la commande (ça peut être long...) :
+- Lancer la commande :
 ```
 python manage.py import_elus --mandat=CD rne-cd.csv
 ```
@@ -62,6 +71,9 @@ python manage.py import_elus --mandat=CD rne-cd.csv
 #### Liste des conseillers régionaux
 
 - Récupérer `rne-cr.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/430e13f9-834b-4411-a1a8-da0b4b6e715c
+```
 
 - Lancer la commande :
 ```
@@ -71,6 +83,9 @@ python manage.py import_elus --mandat=CR rne-cr.csv
 #### Liste des sénateurs
 
 - Récupérer `rne-sen.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/b78f8945-509f-4609-a4a7-3048b8370479
+```
 
 - Lancer la commande :
 ```
@@ -100,6 +115,7 @@ python manage.py createsuperuser
 ### Lancer un serveur local
 
 ```
+python manage.py collectstatic
 ALLOWED_HOSTS=127.0.0.1 python manage.py runserver
 ```
 
