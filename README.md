@@ -51,7 +51,7 @@ wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/2876a346-d50c-
 wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/953465b8-35a3-4e54-89cd-0b9766503ff9
 ```
 
-- Lancer la commande (ça peut être long…) :
+- Lancer la commande :
 ```
 python manage.py import_maires rne-maires.csv mairies.csv
 ```

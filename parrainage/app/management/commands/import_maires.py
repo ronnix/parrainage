@@ -4,15 +4,13 @@
 # the top-level directory of this distribution.
 
 import argparse
-import sys
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from more_itertools import ichunked
+import pandas as pd
 
 from parrainage.app.models import Elu
-from parrainage.app.sources.rne import read_tsv, parse_elu
-from parrainage.app.sources.annuaire import read_csv, met_a_jour_coordonnees_elus
+from parrainage.app.sources.rne import parse_elu
 
 
 class Command(BaseCommand):
@@ -22,29 +20,30 @@ class Command(BaseCommand):
         parser.add_argument(
             "maires",
             help="fichier rne-maires.csv du RNE",
-            type=argparse.FileType(mode="r", encoding="utf-8"),
+            type=argparse.FileType(mode="rb"),
         )
         parser.add_argument(
             "mairies",
             help="chemin vers mairies.csv",
-            type=argparse.FileType(mode="r", encoding="utf-8"),
-        )
-        parser.add_argument(
-            "--chunk-size", type=int, default=200
+            type=argparse.FileType(mode="rb"),
         )
 
+    @transaction.atomic()
     def handle(self, *args, **kwargs):
-        print("Ajout des maires")
-        for chunk in ichunked(read_tsv(kwargs["maires"]), kwargs["chunk_size"]):
-            print(".", end="")
-            with transaction.atomic():
-                Elu.objects.bulk_create(parse_elu(row, role="M") for row in chunk)
-        print()
+        elus = Elu.objects.bulk_create(
+            parse_elu(row, role="M")
+            for row in merge_csv(kwargs["maires"], kwargs["mairies"])
+        )
+        print(f"Ajouté {len(elus)} maires avec leurs coordonnées")
 
-        print(f"Mise à jour des coordonnées")
-        csv_mairies = read_csv(kwargs["mairies"])
-        for i, row in enumerate(csv_mairies):
-            if i % 100 == 0:
-                print(".", end="")
-            met_a_jour_coordonnees_elus(row)
-        print()
+
+def merge_csv(tsv_maires, csv_mairies):
+    df = pd.merge(
+        pd.read_csv(tsv_maires, sep="\t", dtype=str),
+        pd.read_csv(csv_mairies, sep=",", dtype=str),
+        left_on="Code de la commune",
+        right_on="codeInsee",
+    )
+    df.fillna("", inplace=True)
+    for _, row in df.iterrows():
+        yield dict(row)

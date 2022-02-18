@@ -3,4 +3,5 @@ dj-database-url
 dj-static
 gunicorn
 more-itertools
+pandas
 psycopg2-binary<2.9
