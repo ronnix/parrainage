@@ -10,6 +10,7 @@ from django.db import transaction
 import pandas as pd
 
 from parrainage.app.models import Elu
+from parrainage.app.sources.annuaire import nettoie_mairies
 from parrainage.app.sources.rne import parse_elu
 
 
@@ -40,9 +41,10 @@ class Command(BaseCommand):
 def merge_csv(tsv_maires, csv_mairies):
     df = pd.merge(
         pd.read_csv(tsv_maires, sep="\t", dtype=str),
-        pd.read_csv(csv_mairies, sep=",", dtype=str),
+        nettoie_mairies(pd.read_csv(csv_mairies, sep=",", dtype=str)),
         left_on="Code de la commune",
         right_on="codeInsee",
+        validate="one_to_one",
     )
     df.fillna("", inplace=True)
     for _, row in df.iterrows():
