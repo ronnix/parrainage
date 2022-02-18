@@ -93,6 +93,19 @@ python manage.py import_elus --mandat=S rne-sen.csv
 ```
 
 
+#### Liste des députés
+
+- Récupérer `rne-dep.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/1ac42ff4-1336-44f8-a221-832039dbc142
+```
+
+- Lancer la commande :
+```
+python manage.py import_elus --mandat=D rne-dep.csv
+```
+
+
 #### Parrainages déjà validés
 
 - Télécharger le CSV depuis https://presidentielle2022.conseil-constitutionnel.fr/les-parrainages/tous-les-parrainages-valides.html

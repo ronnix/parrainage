@@ -29,7 +29,7 @@ class Command(BaseCommand):
             type=argparse.FileType(mode="r", encoding="utf-8"),
         )
         parser.add_argument(
-            "--mandat", help="Type de mandat", choices=["CD", "CR", "S"], required=True
+            "--mandat", help="Type de mandat", choices=["CD", "CR", "S", "D"], required=True
         )
 
     @transaction.atomic
