@@ -17,6 +17,7 @@ MANDAT = {
     "CD": "Conseiller départemental",
     "CR": "Conseiller régional",
     "S": "Sénateur",
+    "D": "Député",
 }
 
 class Command(BaseCommand):
