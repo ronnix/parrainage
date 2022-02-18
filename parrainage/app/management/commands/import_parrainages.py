@@ -158,7 +158,7 @@ class Command(BaseCommand):
                     (
                         row["Département"]
                         if row["Mandat"]
-                        in ("Conseiller départemental", "Conseillère départementale")
+                        in {"Conseiller départemental", "Conseillère départementale"}
                         else row["Circonscription"]
                     ),
                 )
@@ -171,7 +171,7 @@ class Command(BaseCommand):
                     (
                         row["Département"]
                         if row["Mandat"]
-                        in ("Conseiller départemental", "Conseillère départementale")
+                        in {"Conseiller départemental", "Conseillère départementale"}
                         else row["Circonscription"]
                     ),
                 )
@@ -208,10 +208,10 @@ def trouve_elu(row):
                     family_name=row["Nom"],
                 )
 
-        elif row["Mandat"] in (
+        elif row["Mandat"] in {
             "Conseiller départemental",
             "Conseillère départementale",
-        ):
+        }:
             try:
                 return Elu.objects.get(
                     role="CD", department=DEPARTEMENTS[row["Département"]], **filters
@@ -225,10 +225,7 @@ def trouve_elu(row):
                     **filters,
                 )
 
-        elif row["Mandat"] in (
-            "Conseiller régional",
-            "Conseillère régionale",
-        ):
+        elif row["Mandat"] in {"Conseiller régional", "Conseillère régionale"}:
             try:
                 return Elu.objects.get(role="CR", **filters)
             except Elu.DoesNotExist:
@@ -239,10 +236,11 @@ def trouve_elu(row):
                     **filters,
                 )
 
-        elif row["Mandat"] in (
-            "Sénateur",
-            "Sénatrice",
-        ):
+        elif row["Mandat"] in {"Sénateur", "Sénatrice"}:
             return Elu.objects.get(role="S", **filters)
+
+        elif row["Mandat"] in {"Député", "Députée"}:
+            return Elu.objects.get(role="D", **filters)
+
         else:
             raise
