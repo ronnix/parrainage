@@ -1,0 +1,56 @@
+a, a:focus, a:hover {
+    color: #521A80;
+}
+
+header {
+    color: #521A80;
+    font-size: 1.25rem;
+    padding: 1.4rem 2rem 3.5rem;
+}
+
+section {
+    margin-bottom: 2rem;
+}
+
+.btn-primary {
+    background-color: #521A80;
+    border-color: #431559;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:focus.btn-primary:active {
+    background-color: #431559;
+    border-color: #431559;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title {
+    text-align: center;
+}
+
+#logo {
+    max-width: 100px;
+}
+
+.introduction {
+    margin-bottom: 2.5rem;
+}
+
+@media (max-width:600px) {
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+    }
+
+    #logo {
+        margin-bottom: 6px;
+    }
+}

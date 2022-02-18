@@ -5,8 +5,9 @@
         <meta charset="utf-8">
         <title>{% block title %}Recherche de parrainages{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
         <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+        <link href="{% static 'css/style.css' %}" rel="stylesheet" media="screen">
         {% block extra-head %}{% endblock %}
         {% block extra-css %}{% endblock %}
     </head>
@@ -16,19 +17,21 @@
             <div class="container-fluid">
                 {% block page-header-content %}
 		<div class="row">
-		<div class="col-xs-12 text-xs-center">
-		    <div class="pull-xs-left">
-			<a href="/"><img src="{% static 'img/logo-small.png' %}" alt="Charlotte Marchandise-Franquet, la voie citoyenne"/></a>
+		<div class="header-content">
+		    <div>
+				<a href="/"><img id="logo" src="{% static 'img/logo-small.png' %}" alt="Charlotte Marchandise-Franquet, la voie citoyenne"/></a>
 		    </div>
-		    <div class="pull-xs-right">
+			<div class="title">
+		    {% block page-header-title %}	
+		    <h1>Recherche de parrainages</h1>
+		    {% endblock %}
+			</div>
+		    <div>
 		    {% block page-header-right %}
 		    <a href="/">Accueil</a> |
 		    {% include 'user-widget.html' %}
 		    {% endblock %}
 		    </div>
-		    {% block page-header-title %}
-		    <h1>Recherche de parrainages</h1>
-		    {% endblock %}
 		</div>
 		</div>
                 {% endblock %}
@@ -61,11 +64,10 @@
             <div class="container-fluid">
                 <div class="text-xs-center">
                     {% block footer %}
-		    Copyright 2017 <a
-			href="mailto:parrainage@listes.charlotte-marchandise.fr">Raphaël
-			Hertzog</a>. Contactez-moi en cas de soucis.
+		    Copyright <a
+			href="https://taubirapour2022.fr/" target="_blank">Collectif Taubira pour 2022</a>.
 		    <br/>
-		    <small>Ceci est un logiciel libre. Voici son <a href="https://github.com/rhertzog/parrainage">code source</a>.</small>
+		    <small>Ceci est un logiciel libre. Voici son <a href="https://github.com/ronnix/parrainage">code source</a>.</small>
 		    <br/>
 		    <small><a href="{% url 'infos-legales' %}">Mentions légales</a></small>
                     {% endblock %}

@@ -2,7 +2,7 @@
 {% block page-content %}
 <div class="introduction">
     <div class="container">
-        <p class="lead m-b-4">Ce service permet de coordonner la recherche des parrainages pour Charlotte Marchandise.</p>
+        <p class="lead m-b-4">Ce service permet de coordonner la recherche des parrainages pour Christiane Taubira.</p>
     {% if not user.is_authenticated %}
         <p class="lead m-b-4">Si vous avez du temps et souhaitez aider, commencez par lire
 	<a target="_blank"
@@ -16,124 +16,134 @@
     </div>
 </div>
 <div class="container">
-    {% if not user.is_authenticated %}
-    {% if my_elu %}
-    <h3>Mon élu à contacter</h3>
-    <p><a href="{{ my_elu.get_absolute_url }}?assigned=1">{{ my_elu }}</a></p>
-    <p><a href="{% url 'assign' %}?action=unassign&elu_id={{ my_elu.id }}"
-	class="btn btn-primary">Finalement, je ne veux pas le faire</a>
-    </p>
-    {% else %}
-    <h3>Je veux contacter un maire pour vous aider</h3>
-    <a href="{% url 'assign' %}" class="btn btn-primary">Assignez moi un maire</a></p>
-    {% endif %}
-    {% endif %}
-    <h3>Rechercher un élu</h3>
-    <div>
-	<form action="{% url 'elu-list' %}" method="GET" class="form-inline">
-	    <input type="text" class="form-control" name="search" placeholder="Nom ou ville de l'élu">
-	    <button type="submit" class="btn btn-primary">Rechercher</button>
-	</form>
-    </div>
-    <p></p>
-    <h3>Consulter les élus d'un département</h3>
-    <div>
-	<form action="{% url 'elu-list' %}" method="GET" class="form-inline">
-	    <div class="form-group">
-		<label for="department">Département:</label>
-		<select class="form-control" name="department" id="department">
-		    {% for d in departements %}
-		    <option>{{ d }}</option>
-		    {% endfor %}
-		</select>
-	    </div>
-	    <div class="form-group">
-		<label for="sort">Trier par:</label>
-		<select class="form-control" name="sort" id="sort">
-		    <option value="priority">Priorité</option>
-		    <option value="">Ordre alphabétique</option>
-		    {% if user.is_authenticated %}
-		    <option value="status">Statut</option>
-		    {% endif %}
-		</select>
-	    </div>
-	    <button type="submit" class="btn btn-primary">Voir les élus</button>
-	</form>
-    </div>
-    <p></p>
-    {% if user.is_authenticated %}
-    <h3>Consulter les élus prioritaires</h3>
-    <p><a href="{% url 'elu-list' %}?sort=priority&assigned=no&finished=no&limit=100">Top 100
-	des élus les plus prioritaires qui ne sont assignés à personne</a></p>
-    {% endif %}
-    <h3>Liens utiles</h3>
-    <ul>
-	<li><a href="https://umap.openstreetmap.fr/fr/map/carte-des-parrainages-chargement-long_128039#6/51.000/2.000">Carte des élus</a> : identifiez les élus près de chez vous qu'il reste à contacter.</li>
-	<li><a href="http://charlotte-marchandise.fr/chamawiki/doku.php?id=public:parrainages">Explications et conseils pour démarcher les élus</a></li>
-	<li><a href="http://charlotte-marchandise.fr/parrainage/">Le kit parrainage</a></li>
-	<li><a href="https://t.me/joinchat/AAAAAEFn-lxXdO7IsdDKQg">Rejoindre
-		le groupe de discussion dédié sur Telegram</a></li>
-	<li><a href="https://laprimaire.org/parrainages/">Le décompte des parrainages officiels par
-		LaPrimaire.org</a></li>
-    </ul>
-    <p></p>
-    {% if user.is_authenticated %}
-    <h3>Mes élus à gérer</h3>
-    <table class="table table-sm table-striped">
-	<tr>
-	    <th>#</th>
-	    <th>Élu</th>
-	    <th>Statut</th>
-	    <th>Dernière mise à jour</th>
-	    <th>Actions</th>
-	</tr>
-	{% for elu in my_elus %}
-	<tr>
-	    <td>{{ forloop.counter }}</td>
-	    <td><a href="{{ elu.get_absolute_url }}">{{ elu }}</a></td>
-	    <td>{{ elu.get_status_display }}</td>
-	    <td>{{ elu.last_updated }} (il y a {{ elu.last_updated|timesince }})</td>
-	    <td><a class="btn btn-sm btn-primary" data-toggle="collapse"
-					   href="#notes-{{ elu.id }}">Voir
-					   notes</a></td>
-	</tr>
-	<tr>
-	    <td colspan="5">
-		<ul id="notes-{{ elu.id }}" class="collapse">
-		{% for note in elu.notes.all %}
-		    <li>
-		    Note du {{ note.timestamp }}
-		    par {% include 'userlink.html' with u=note.user %} :<br/>
-		    {{ note.note|linebreaksbr }}
-		    </li>
-		{% endfor %}
-		</ul>
-	    </td>
-	</tr>
-	{% endfor %}
-    </table>
-    <p></p>
-    {% endif %}
-    <h3>Statistiques</h3>
-    <ul>
-	{% if user.is_authenticated %}
-	<li>{{ user_count }} bénévoles ont contacté {{ elus_contacted }}
-	    élus parmi lesquels {{ elus_accepted }} ont donné leur
-	    parrainage, {{ elus_refused }} ont refusé (il y a donc
-	    {{ elus_in_process }} élus n'ayant pas encore répondu).</li>
-	<li><a href="{% url 'department-synoptic' %}">Vue synoptique par
-		département</a></li>
-	<li><a href="{% url 'department-ranking' %}">Classement des
-		départements</a></li>
-	<li><a href="{% url 'user-ranking' %}">Classement des
-		utilisateurs</a></li>
+	{% if not user.is_authenticated %}
+	{% if my_elu %}
+	<section>
+		<h3>Mon élu à contacter</h3>
+		<p><a href="{{ my_elu.get_absolute_url }}?assigned=1">{{ my_elu }}</a></p>
+		<p><a href="{% url 'assign' %}?action=unassign&elu_id={{ my_elu.id }}"
+		class="btn btn-primary">Finalement, je ne veux pas le faire</a>
+		</p>
+	</section>
 	{% else %}
-	<li>{{ user_count }} bénévoles ont contacté {{ elus_contacted }}
-	    élus. Des statistiques plus détaillées sont disponibles
-	    une fois connecté.
-	</li>
-
+	<section>
+		<h3>Je veux contacter un maire pour vous aider</h3>
+		<a href="{% url 'assign' %}" class="btn btn-primary">Assignez moi un maire</a></p>
+	</section>	
 	{% endif %}
-    </ul>
+	{% endif %}
+	<section>
+		<h3>Rechercher un élu</h3>
+		<div>
+		<form action="{% url 'elu-list' %}" method="GET" class="form-inline">
+			<input type="text" class="form-control" name="search" placeholder="Nom ou ville de l'élu">
+			<button type="submit" class="btn btn-primary">Rechercher</button>
+		</form>
+		</div>
+    </section>
+	<section>
+		<h3>Consulter les élus d'un département</h3>
+		<div>
+		<form action="{% url 'elu-list' %}" method="GET" class="form-inline">
+			<div class="form-group">
+			<label for="department">Département:</label>
+			<select class="form-control" name="department" id="department">
+				{% for d in departements %}
+				<option>{{ d }}</option>
+				{% endfor %}
+			</select>
+			</div>
+			<div class="form-group">
+			<label for="sort">Trier par:</label>
+			<select class="form-control" name="sort" id="sort">
+				<option value="priority">Priorité</option>
+				<option value="">Ordre alphabétique</option>
+				{% if user.is_authenticated %}
+				<option value="status">Statut</option>
+				{% endif %}
+			</select>
+			</div>
+			<button type="submit" class="btn btn-primary">Voir les élus</button>
+		</form>
+		</div>
+    </section>
+	<section>
+		{% if user.is_authenticated %}
+		<h3>Consulter les élus prioritaires</h3>
+		<p><a href="{% url 'elu-list' %}?sort=priority&assigned=no&finished=no&limit=100">Top 100
+		des élus les plus prioritaires qui ne sont assignés à personne</a></p>
+		{% endif %}
+		<h3>Liens utiles</h3>
+		<ul>
+		<li><a href="https://umap.openstreetmap.fr/fr/map/carte-des-parrainages-chargement-long_128039#6/51.000/2.000">Carte des élus</a> : identifiez les élus près de chez vous qu'il reste à contacter.</li>
+		<li><a href="http://charlotte-marchandise.fr/chamawiki/doku.php?id=public:parrainages">Explications et conseils pour démarcher les élus</a></li>
+		<li><a href="http://charlotte-marchandise.fr/parrainage/">Le kit parrainage</a></li>
+		<li><a href="https://t.me/joinchat/AAAAAEFn-lxXdO7IsdDKQg">Rejoindre
+			le groupe de discussion dédié sur Telegram</a></li>
+		<li><a href="https://laprimaire.org/parrainages/">Le décompte des parrainages officiels par
+			LaPrimaire.org</a></li>
+		</ul>
+	</section>
+    <section>
+		{% if user.is_authenticated %}
+		<h3>Mes élus à gérer</h3>
+		<table class="table table-sm table-striped">
+		<tr>
+			<th>#</th>
+			<th>Élu</th>
+			<th>Statut</th>
+			<th>Dernière mise à jour</th>
+			<th>Actions</th>
+		</tr>
+		{% for elu in my_elus %}
+		<tr>
+			<td>{{ forloop.counter }}</td>
+			<td><a href="{{ elu.get_absolute_url }}">{{ elu }}</a></td>
+			<td>{{ elu.get_status_display }}</td>
+			<td>{{ elu.last_updated }} (il y a {{ elu.last_updated|timesince }})</td>
+			<td><a class="btn btn-sm btn-primary" data-toggle="collapse"
+						href="#notes-{{ elu.id }}">Voir
+						notes</a></td>
+		</tr>
+		<tr>
+			<td colspan="5">
+			<ul id="notes-{{ elu.id }}" class="collapse">
+			{% for note in elu.notes.all %}
+				<li>
+				Note du {{ note.timestamp }}
+				par {% include 'userlink.html' with u=note.user %} :<br/>
+				{{ note.note|linebreaksbr }}
+				</li>
+			{% endfor %}
+			</ul>
+			</td>
+		</tr>
+		{% endfor %}
+		</table>
+    	{% endif %}
+	</section>
+	<section>
+		<h3>Statistiques</h3>
+		<ul>
+		{% if user.is_authenticated %}
+		<li>{{ user_count }} bénévoles ont contacté {{ elus_contacted }}
+			élus parmi lesquels {{ elus_accepted }} ont donné leur
+			parrainage, {{ elus_refused }} ont refusé (il y a donc
+			{{ elus_in_process }} élus n'ayant pas encore répondu).</li>
+		<li><a href="{% url 'department-synoptic' %}">Vue synoptique par
+			département</a></li>
+		<li><a href="{% url 'department-ranking' %}">Classement des
+			départements</a></li>
+		<li><a href="{% url 'user-ranking' %}">Classement des
+			utilisateurs</a></li>
+		{% else %}
+		<li>{{ user_count }} bénévoles ont contacté {{ elus_contacted }}
+			élus. Des statistiques plus détaillées sont disponibles
+			une fois connecté.
+		</li>
+
+		{% endif %}
+	    </ul>
+	</section>
 </div>
 {% endblock %}
