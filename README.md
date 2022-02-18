@@ -109,6 +109,9 @@ python manage.py import_elus --mandat=D rne-dep.csv
 #### Parrainages déjà validés
 
 - Télécharger le CSV depuis https://presidentielle2022.conseil-constitutionnel.fr/les-parrainages/tous-les-parrainages-valides.html
+```
+wget https://presidentielle2022.conseil-constitutionnel.fr/telechargement/parrainagestotal.csv
+```
 
 - Lancer la commande :
 ```
