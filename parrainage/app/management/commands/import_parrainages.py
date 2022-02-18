@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from parrainage.app.models import Elu
+from parrainage.app.management.commands.import_elus import MANDAT
 
 
 DEPARTEMENTS = {
@@ -179,68 +180,79 @@ class Command(BaseCommand):
 
 
 def trouve_elu(row):
-    filters = {
-        "first_name": row["Prénom"],
-        "family_name": row["Nom"],
-    }
+    prenom = row["Prénom"]
+    nom = row["Nom"]
+
     # On essaie d’abord juste avec le nom, si ce n’est pas ambigu
     try:
-        return Elu.objects.get(**filters)
-    except Elu.DoesNotExist:
-        # Sinon, des fois c’est la moitié d’un nom composé
-        return Elu.objects.get(
-            first_name=row["Prénom"],
-            family_name__startswith=row["Nom"] + "-",
-        )
+        return trouve_elu_par_nom(prenom=prenom, nom=nom)
+
+    # Si c’est ambigu, on essaie d’affiner avec le mandat indiqué par le CC
     except Elu.MultipleObjectsReturned:
-        # Sinon on essaie d’affiner avec le mandat indiqué par le CC
         if row["Mandat"] == "Maire":
             try:
-                return Elu.objects.get(
-                    role="M", city__iexact=row["Circonscription"], **filters
+                return trouve_maire_par_nom_et_ville(
+                    prenom=prenom, nom=nom, ville=row["Circonscription"]
                 )
             except Elu.DoesNotExist:
                 # Sinon c’est un accent à enlever sur une capitale
-                return Elu.objects.get(
-                    role="M",
-                    city__iexact=row["Circonscription"].replace("É", "E"),
-                    first_name=row["Prénom"],
-                    family_name=row["Nom"],
+                return trouve_maire_par_nom_et_ville(
+                    prenom=prenom,
+                    nom=nom,
+                    ville=row["Circonscription"].replace("É", "E"),
                 )
 
         elif row["Mandat"] in {
             "Conseiller départemental",
             "Conseillère départementale",
         }:
-            try:
-                return Elu.objects.get(
-                    role="CD", department=DEPARTEMENTS[row["Département"]], **filters
-                )
-            except Elu.DoesNotExist:
-                # Il est peut-être aussi maire !
-                return Elu.objects.get(
-                    role="M",
-                    department=DEPARTEMENTS[row["Département"]],
-                    comment__contains="Autre mandat:",
-                    **filters,
-                )
+            return trouve_elu_par_mandat(
+                prenom=prenom,
+                nom=nom,
+                role="CD",
+                department=DEPARTEMENTS[row["Département"]],
+            )
 
         elif row["Mandat"] in {"Conseiller régional", "Conseillère régionale"}:
-            try:
-                return Elu.objects.get(role="CR", **filters)
-            except Elu.DoesNotExist:
-                # Il est peut-être aussi maire ou conseiller départemental
-                return Elu.objects.get(
-                    role__in=["M", "CD"],
-                    department=DEPARTEMENTS[row["Département"]],
-                    **filters,
-                )
+            return trouve_elu_par_mandat(prenom=prenom, nom=nom, role="CR")
 
         elif row["Mandat"] in {"Sénateur", "Sénatrice"}:
-            return Elu.objects.get(role="S", **filters)
+            return trouve_elu_par_mandat(prenom=prenom, nom=nom, role="S")
 
         elif row["Mandat"] in {"Député", "Députée"}:
-            return Elu.objects.get(role="D", **filters)
+            return trouve_elu_par_mandat(prenom=prenom, nom=nom, role="D")
 
         else:
             raise
+
+
+def trouve_elu_par_nom(prenom, nom):
+    try:
+        return Elu.objects.get(first_name=prenom, family_name=nom)
+    except Elu.DoesNotExist:
+        # Sinon, des fois c’est la moitié d’un nom composé
+        return Elu.objects.get(
+            first_name=prenom,
+            family_name__startswith=nom + "-",
+        )
+
+
+def trouve_maire_par_nom_et_ville(prenom, nom, ville):
+    return Elu.objects.get(
+        first_name=prenom,
+        family_name=nom,
+        role="M",
+        city__iexact=ville,
+    )
+
+
+def trouve_elu_par_mandat(prenom, nom, role, **extra):
+    try:
+        # Recherche par mandat principal
+        return Elu.objects.get(first_name=prenom, family_name=nom, role=role, **extra)
+    except Elu.DoesNotExist:
+        # Recherche par mandat additionnel
+        autre_mandat = f"Autre mandat: {MANDAT[role]}"
+        return Elu.objects.get(
+            first_name=prenom, family_name=nom, comment__contains=autre_mandat, **extra
+        )
