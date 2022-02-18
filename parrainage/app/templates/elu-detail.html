@@ -20,18 +20,18 @@
     <div class="alert alert-danger">
 	Apparemment {{ object }} a déjà donné son parrainage à un
 	autre candidat ou nous a déjà notifié son refus de
-	parrainer Christiane Taubira… désolé.
+	parrainer {{ candidature }}… désolé.
     </div>
     {% elif object.status >= object.STATUS_ACCEPTED %}
     <div class="alert alert-success">
-	{{ object }} a déjà accepté de parrainer Christiane Taubira.
+	{{ object }} a déjà accepté de parrainer {{ candidature }}.
     </div>
     {% elif object.status < object.STATUS_REFUSED %}
     <div class="alert alert-success">
 	Apparemment, {{ object }} n'a pas encore donné son parrainage,
 	pourriez-vous le <a
 	    href="https://docs.google.com/document/d/1biDvz9WYIavvQIoegl_oe-b_u5w3_pKNe2QatceW6TQ/edit?usp=sharing">démarcher</a> pour le
-	convaincre de parrainer Christiane Taubira ?
+	convaincre de parrainer {{ candidature }} ?
     </div>
     {% endif %}
 </div>

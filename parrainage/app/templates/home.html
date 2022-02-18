@@ -2,7 +2,7 @@
 {% block page-content %}
 <div class="introduction">
     <div class="container">
-        <p class="lead m-b-4">Ce service permet de coordonner la recherche des parrainages pour Christiane Taubira.</p>
+        <p class="lead m-b-4">Ce service permet de coordonner la recherche des parrainages pour {{ candidature }}.</p>
     {% if not user.is_authenticated %}
         <p class="lead m-b-4">Si vous avez du temps et souhaitez aider, commencez par lire
 	<a target="_blank"

@@ -1,6 +1,7 @@
 import csv
 import random
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count, Max
@@ -11,6 +12,12 @@ from django.utils.http import urlencode
 from django.views.generic import TemplateView, ListView, DetailView, View
 
 from parrainage.app.models import Elu, User, UserSettings
+
+
+def global_context(request):
+    return {
+        "candidature": settings.NOM_CANDIDATURE,
+    }
 
 
 def get_assigned_elus(user, exclude_finished=True):
