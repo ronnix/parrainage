@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from parrainage.app.views import HomePageView, EluListView, EluDetailView
 from parrainage.app.views import EluCSVForMap, EluCSVForMailing, UserDetailView
 from parrainage.app.views import DepartmentRankingView, UserRankingView
-from parrainage.app.views import DepartmentSynopticView, EluAnswerView
+from parrainage.app.views import DepartmentSynopticView
 from parrainage.app.views import redirect_by_city_code, PublicAssignation
 
 urlpatterns = [
@@ -34,8 +34,6 @@ urlpatterns = [
     url(r'^r/city_code/(?P<city_code>[0-9a-zA-z]+)/$',
         redirect_by_city_code, name='redirect-by-city-code'),
     url(r'r/assign/', PublicAssignation.as_view(), name='assign'),
-    url(r'^u/(?P<pk>[0-9]+)/(?P<token>\w+)/$', EluAnswerView.as_view(),
-        name='elu-answer'),
     url(r'^stats/ranking/department/$', DepartmentRankingView.as_view(),
         name='department-ranking'),
     url(r'^stats/ranking/user/$', UserRankingView.as_view(),
