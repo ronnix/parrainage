@@ -1,5 +1,6 @@
 __pycache__
 parrainage/db.sqlite3
 parrainage/db.sqlite3-journal
+parrainage/staticfiles/
 .ropeproject
 venv
