@@ -27,3 +27,36 @@ jobs:
       - name: Tests automatisés
         run: |
           pytest
+
+      - name: Test de l’import des maires
+        run: |
+          python3 manage.py migrate
+
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/2876a346-d50c-4911-934e-19ee07b0e503
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/953465b8-35a3-4e54-89cd-0b9766503ff9
+          python manage.py import_maires rne-maires.csv mairies.csv
+
+      - name: Test de l’import des conseillers départementaux
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/601ef073-d986-4582-8e1a-ed14dc857fba
+          python manage.py import_elus --mandat=CD rne-cd.csv
+
+      - name: Test de l’import des conseillers départementaux
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/430e13f9-834b-4411-a1a8-da0b4b6e715c
+          python manage.py import_elus --mandat=CR rne-cr.csv
+
+      - name: Test de l’import des sénateurs
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/b78f8945-509f-4609-a4a7-3048b8370479
+          python manage.py import_elus --mandat=S rne-sen.csv
+
+      - name: Test de l’import des députés
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/1ac42ff4-1336-44f8-a221-832039dbc142
+          python manage.py import_elus --mandat=D rne-dep.csv
+
+      - name: Test de l’import des parrainages validés
+        run: |
+          wget https://presidentielle2022.conseil-constitutionnel.fr/telechargement/parrainagestotal.csv
+          python manage.py import_parrainages parrainagestotal.csv --candidate="TAUBIRA Christiane"
