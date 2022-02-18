@@ -14,11 +14,13 @@ from parrainage.app.sources.rne import read_tsv, parse_elu
 
 
 MANDAT = {
+    "CC": "Président de communauté de communes",
     "CD": "Conseiller départemental",
     "CR": "Conseiller régional",
-    "S": "Sénateur",
     "D": "Député",
+    "S": "Sénateur",
 }
+
 
 class Command(BaseCommand):
     help = "Importer les données du RNE sur des élus (hors maires)"
@@ -30,7 +32,10 @@ class Command(BaseCommand):
             type=argparse.FileType(mode="r", encoding="utf-8"),
         )
         parser.add_argument(
-            "--mandat", help="Type de mandat", choices=["CD", "CR", "S", "D"], required=True
+            "--mandat",
+            help="Type de mandat",
+            choices=["CD", "CR", "CC", "S", "D"],
+            required=True,
         )
 
     @transaction.atomic
@@ -38,7 +43,15 @@ class Command(BaseCommand):
         nouveaux_elus = []
         nb_elus_mis_a_jour = 0
         for row in read_tsv(kwargs["csvfile"]):
-            elu = parse_elu(row, role=kwargs["mandat"])
+            mandat = kwargs["mandat"]
+
+            # Seuls les présidents pour les communautés de communes
+            if mandat == "CC" and (
+                row["Libellé de la fonction"] != "Président du conseil communautaire"
+            ):
+                continue
+
+            elu = parse_elu(row, role="A" if mandat == "CC" else mandat)
             try:
                 elu_existant = Elu.objects.get(
                     first_name=elu.first_name,
@@ -48,7 +61,7 @@ class Command(BaseCommand):
                 if elu_existant.role == elu.role:
                     continue
                 else:
-                    annotation = f"\nAutre mandat: {MANDAT[elu.role]}"
+                    annotation = f"\nAutre mandat: {MANDAT[mandat]}"
                     if annotation not in elu_existant.comment:
                         elu_existant.comment += annotation
                         elu_existant.save()
@@ -58,7 +71,11 @@ class Command(BaseCommand):
             except Elu.MultipleObjectsReturned:
                 logging.error(
                     "Il y a plusieurs %s %s né(e)s le %s",
-                    elu.first_name, elu.family_name, elu.birthdate
+                    elu.first_name,
+                    elu.family_name,
+                    elu.birthdate,
                 )
         Elu.objects.bulk_create(nouveaux_elus)
-        print(f"Ajouté {len(nouveaux_elus)} élus et mis à jour {nb_elus_mis_a_jour} élus existants.")
+        print(
+            f"Ajouté {len(nouveaux_elus)} élus et mis à jour {nb_elus_mis_a_jour} élus existants."
+        )

@@ -80,6 +80,19 @@ wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/430e13f9-834b-
 python manage.py import_elus --mandat=CR rne-cr.csv
 ```
 
+#### Liste des présidents de communautés de communes
+
+- Récupérer `rne-epci.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/41d95d7d-b172-4636-ac44-32656367cdc7
+```
+
+- Lancer la commande :
+```
+python manage.py import_elus --mandat=CC rne-epci.csv
+```
+
+
 #### Liste des sénateurs
 
 - Récupérer `rne-sen.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/

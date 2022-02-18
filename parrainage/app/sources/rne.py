@@ -26,8 +26,13 @@ def parse_elu(row, role):
             row["Libellé de la catégorie socio-professionnelle"]
         ),
         department=row.get("Code du département", ""),
-        city=row.get("Libellé de la commune", ""),
-        city_code=row.get("Code de la commune", ""),
+        city=row.get(
+            "Libellé de la commune",
+            row.get("Libellé de la commune de rattachement", ""),
+        ),
+        city_code=row.get(
+            "Code de la commune", row.get("Code de la commune de rattachement", "")
+        ),
         city_zipcode=row.get("CodePostal", ""),
         city_latitude=row.get("Latitude", ""),
         city_longitude=row.get("Longitude", ""),
