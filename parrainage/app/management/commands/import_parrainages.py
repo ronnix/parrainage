@@ -222,6 +222,12 @@ def trouve_elu(row):
         elif row["Mandat"] in {"Député", "Députée"}:
             return trouve_elu_par_mandat(prenom=prenom, nom=nom, role="D")
 
+        elif row["Mandat"] in {
+            "Représentant français au Parlement européen",
+            "Représentante française au Parlement européen",
+        }:
+            return trouve_elu_par_mandat(prenom=prenom, nom=nom, role="DE")
+
         else:
             raise
 
@@ -252,7 +258,8 @@ def trouve_elu_par_mandat(prenom, nom, role, **extra):
         return Elu.objects.get(first_name=prenom, family_name=nom, role=role, **extra)
     except Elu.DoesNotExist:
         # Recherche par mandat additionnel
-        autre_mandat = f"Autre mandat: {MANDAT[role]}"
+        mandat = "CC" if role == "A" else role
+        autre_mandat = f"Autre mandat: {MANDAT[mandat]}"
         return Elu.objects.get(
             first_name=prenom, family_name=nom, comment__contains=autre_mandat, **extra
         )
