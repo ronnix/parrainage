@@ -46,6 +46,11 @@ jobs:
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/430e13f9-834b-4411-a1a8-da0b4b6e715c
           python manage.py import_elus --mandat=CR rne-cr.csv
 
+      - name: Test de l’import des présidents de communautés de communes
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/41d95d7d-b172-4636-ac44-32656367cdc7
+          python manage.py import_elus --mandat=CC rne-epci.csv
+
       - name: Test de l’import des sénateurs
         run: |
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/b78f8945-509f-4609-a4a7-3048b8370479
