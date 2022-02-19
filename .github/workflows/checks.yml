@@ -61,6 +61,11 @@ jobs:
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/1ac42ff4-1336-44f8-a221-832039dbc142
           python manage.py import_elus --mandat=D rne-dep.csv
 
+      - name: Test de l’import des représentants au Parlement européen
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/70957bb0-f19f-40c5-b97b-90b3d4d71f9e
+          python manage.py import_elus --mandat=DE rne-rpe.csv
+
       - name: Test de l’import des parrainages validés
         run: |
           wget https://presidentielle2022.conseil-constitutionnel.fr/telechargement/parrainagestotal.csv

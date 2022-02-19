@@ -119,6 +119,20 @@ python manage.py import_elus --mandat=D rne-dep.csv
 ```
 
 
+#### Liste des représentants au parlement européen
+
+- Récupérer `rne-rpe.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/70957bb0-f19f-40c5-b97b-90b3d4d71f9e
+```
+
+- Lancer la commande :
+```
+python manage.py import_elus --mandat=DE rne-rpe.csv
+```
+
+
+
 #### Parrainages déjà validés
 
 - Télécharger le CSV depuis https://presidentielle2022.conseil-constitutionnel.fr/les-parrainages/tous-les-parrainages-valides.html
