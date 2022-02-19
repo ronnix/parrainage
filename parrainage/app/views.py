@@ -265,6 +265,8 @@ class EluCSVForMap(View):
         elif status == 'in-progress':
             qs = qs.exclude(status__gte=Elu.STATUS_REFUSED).exclude(
                 Q(status=Elu.STATUS_NOTHING) & Q(assigned_to__isnull=True))
+        elif status == 'accepted':
+            qs = qs.filter(status__gte=Elu.STATUS_ACCEPTED)
         department = request.GET.get('department')
         if department:
             deplist = department.split(",")
