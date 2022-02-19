@@ -34,7 +34,9 @@ jobs:
 
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/2876a346-d50c-4911-934e-19ee07b0e503
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/953465b8-35a3-4e54-89cd-0b9766503ff9
-          python manage.py import_maires rne-maires.csv mairies.csv
+          wget https://www.insee.fr/fr/statistiques/fichier/6011070/ensemble.zip
+          unzip ensemble.zip
+          python manage.py import_maires rne-maires.csv mairies.csv donnees_communes.csv
 
       - name: Test de l’import des conseillers départementaux
         run: |

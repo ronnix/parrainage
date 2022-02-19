@@ -1,11 +1,20 @@
 from datetime import datetime
-import csv
+
+import pandas as pd
 
 from parrainage.app.models import Elu
 
 
-def read_tsv(iterable):
-    return csv.DictReader(iterable, delimiter="\t")
+def charge_rne(chemin):
+    return (
+        pd.read_csv(chemin, sep="\t", dtype=str)
+        .drop(
+            columns=[
+                "Code de la catégorie socio-professionnelle",
+            ]
+        )
+        .fillna("")
+    )
 
 
 def parse_elu(row, role):
@@ -37,6 +46,7 @@ def parse_elu(row, role):
         city_latitude=row.get("Latitude", ""),
         city_longitude=row.get("Longitude", ""),
         city_address=row.get("Adresse", ""),
+        city_size=row.get("PMUN", None),
         public_email=row.get("Email", ""),
         public_phone=row.get("Téléphone", ""),
         public_website=row.get("Url", ""),

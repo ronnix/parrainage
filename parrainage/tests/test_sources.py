@@ -12,15 +12,13 @@ Code du département\tLibellé du département\tCode de la collectivité à stat
 
 @pytest.fixture
 def row_rne_maires():
-    from parrainage.app.sources.rne import read_tsv
+    from parrainage.app.sources.rne import charge_rne
 
-    reader = read_tsv(TSV_RNE_MAIRES.splitlines())
-    return list(reader)[0]
+    return dict(next(charge_rne(StringIO(TSV_RNE_MAIRES)).iterrows())[1])
 
 
 def test_tsv_rne_maires(row_rne_maires):
     assert row_rne_maires == {
-        "Code de la catégorie socio-professionnelle": "74",
         "Code de la collectivité à statut particulier": "",
         "Code de la commune": "01001",
         "Code du département": "01",
@@ -43,18 +41,25 @@ codeInsee,CodePostal,NomOrganisme,NomCommune,Email,Téléphone,Url,Adresse,Latit
 """
 
 
+CSV_POPULATION = """\
+CODREG;REG;CODDEP;CODARR;CODCAN;CODCOM;COM;PMUN;PCAP;PTOT
+84;Auvergne-Rhône-Alpes;01;2;08;001;L'Abergement-Clémenciat;779;19;798
+"""
+
+
 @pytest.fixture
 def row_merged_maires():
     from parrainage.app.management.commands.import_maires import merge_csv
 
-    rows = merge_csv(StringIO(TSV_RNE_MAIRES), StringIO(CSV_ANNUAIRE))
+    rows = merge_csv(
+        StringIO(TSV_RNE_MAIRES), StringIO(CSV_ANNUAIRE), StringIO(CSV_POPULATION)
+    )
     return list(rows)[0]
 
 
 def test_merged_maires(row_merged_maires):
     assert row_merged_maires == {
         "Adresse": "Le Village",
-        "Code de la catégorie socio-professionnelle": "74",
         "Code de la collectivité à statut particulier": "",
         "Code de la commune": "01001",
         "Code du département": "01",
@@ -71,13 +76,11 @@ def test_merged_maires(row_merged_maires):
         "Libellé du département": "Ain",
         "Longitude": "4.92007112503",
         "Nom de l'élu": "BOULON",
-        "NomCommune": "L'Abergement-Clémenciat",
         "NomOrganisme": "Mairie de L'Abergement-Clémenciat",
+        "PMUN": "779",
         "Prénom de l'élu": "Daniel",
         "Téléphone": "+33 4 74 24 03 08",
         "Url": "http://example.org",
-        "codeInsee": "01001",
-        "dateMiseAJour": "2014-12-04",
     }
 
 
@@ -89,15 +92,13 @@ Code du département\tLibellé du département\tCode du canton\tLibellé du cant
 
 @pytest.fixture
 def row_rne_cd():
-    from parrainage.app.sources.rne import read_tsv
+    from parrainage.app.sources.rne import charge_rne
 
-    reader = read_tsv(TSV_RNE_CD.splitlines())
-    return list(reader)[0]
+    return dict(next(charge_rne(StringIO(TSV_RNE_CD)).iterrows())[1])
 
 
 def test_tsv_rne_cd(row_rne_cd):
     assert row_rne_cd == {
-        "Code de la catégorie socio-professionnelle": "38",
         "Code du canton": "0101",
         "Code du département": "01",
         "Code sexe": "F",
@@ -121,15 +122,13 @@ Code de la région\tLibellé de la région\tCode de la section départementale\t
 
 @pytest.fixture
 def row_rne_cr():
-    from parrainage.app.sources.rne import read_tsv
+    from parrainage.app.sources.rne import charge_rne
 
-    reader = read_tsv(TSV_RNE_CR.splitlines())
-    return list(reader)[0]
+    return dict(next(charge_rne(StringIO(TSV_RNE_CR)).iterrows())[1])
 
 
 def test_tsv_rne_cr(row_rne_cr):
     assert row_rne_cr == {
-        "Code de la catégorie socio-professionnelle": "23",
         "Code de la région": "01",
         "Code de la section départementale": "971",
         "Code sexe": "F",
@@ -154,15 +153,13 @@ Code du département\tLibellé du département\tCode de la collectivité à stat
 
 @pytest.fixture
 def row_rne_sen():
-    from parrainage.app.sources.rne import read_tsv
+    from parrainage.app.sources.rne import charge_rne
 
-    reader = read_tsv(TSV_RNE_SEN.splitlines())
-    return list(reader)[0]
+    return dict(next(charge_rne(StringIO(TSV_RNE_SEN)).iterrows())[1])
 
 
 def test_tsv_rne_sen(row_rne_sen):
     assert row_rne_sen == {
-        "Code de la catégorie socio-professionnelle": "34",
         "Code de la collectivité à statut particulier": "",
         "Code du département": "01",
         "Code sexe": "F",
