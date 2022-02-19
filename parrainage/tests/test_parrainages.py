@@ -1,3 +1,5 @@
+from io import StringIO
+
 import pytest
 
 
@@ -10,10 +12,11 @@ Code du département\tLibellé du département\tCode de la collectivité à stat
 @pytest.fixture
 def elus():
     from parrainage.app.models import Elu
-    from parrainage.app.sources.rne import read_tsv, parse_elu
+    from parrainage.app.sources.rne import charge_rne, parse_elu
 
-    reader = read_tsv(MAIRES.splitlines())
-    elus = [parse_elu(row, role="M") for row in reader]
+    elus = [
+        parse_elu(row, role="M") for _, row in charge_rne(StringIO(MAIRES)).iterrows()
+    ]
     Elu.objects.bulk_create(elus)
 
 

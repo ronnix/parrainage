@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from parrainage.app.models import Elu
-from parrainage.app.sources.rne import read_tsv, parse_elu
+from parrainage.app.sources.rne import charge_rne, parse_elu
 
 
 MANDAT = {
@@ -43,7 +43,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         nouveaux_elus = []
         nb_elus_mis_a_jour = 0
-        for row in read_tsv(kwargs["csvfile"]):
+        for _, row in charge_rne(kwargs["csvfile"]).iterrows():
             mandat = kwargs["mandat"]
 
             # Seuls les présidents pour les communautés de communes
