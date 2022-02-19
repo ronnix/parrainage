@@ -7,6 +7,7 @@ import argparse
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from more_itertools import partition
 
 from parrainage.app.models import Elu
 from parrainage.app.sources.annuaire import charge_annuaire_mairies
@@ -36,13 +37,34 @@ class Command(BaseCommand):
 
     @transaction.atomic()
     def handle(self, *args, **kwargs):
-        elus = Elu.objects.bulk_create(
+        existants = {
+            tuple(d.values())
+            for d in Elu.objects.filter(role="M").values(
+                "first_name", "family_name", "birthdate", "city"
+            )
+        }
+        print(f"Déja {len(existants)} maires dans la base.")
+        importes = [
             parse_elu(row, role="M")
             for row in merge_csv(
                 kwargs["maires"], kwargs["mairies"], kwargs["population"]
             )
+        ]
+        nouveaux, ignores = partition(
+            (
+                lambda elu: (
+                    elu.first_name,
+                    elu.family_name,
+                    elu.birthdate,
+                    elu.city,
+                )
+                in existants
+            ),
+            importes,
         )
-        print(f"Ajouté {len(elus)} maires avec leurs coordonnées")
+        print(f"Ignoré {len(list(ignores))}/{len(importes)} maires déjà importés.")
+        ajoutes = Elu.objects.bulk_create(nouveaux)
+        print(f"Ajouté {len(ajoutes)} nouveaux maires avec leurs coordonnées.")
 
 
 def merge_csv(tsv_maires, csv_mairies, csv_population):
