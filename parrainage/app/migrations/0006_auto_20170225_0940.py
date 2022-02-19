@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.db import migrations, models
 
 
@@ -14,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='elu',
             name='status',
-            field=models.IntegerField(default=1, db_index=True, choices=[(1, "Rien n'a été fait"), (2, 'Démarches en cours'), (3, "Charlotte doit recontacter l'élu"), (3, "L'élu souhaite être recontacté"), (10, 'Parrainage refusé'), (20, 'Parrainage accepté'), (30, 'Parrainage reçu par le conseil constitutionnel')]),
+            field=models.IntegerField(default=1, db_index=True, choices=[(1, "Rien n'a été fait"), (2, 'Démarches en cours'), (3, f"{settings.NOM_CANDIDATURE} doit recontacter l'élu"), (3, "L'élu souhaite être recontacté"), (10, 'Parrainage refusé'), (20, 'Parrainage accepté'), (30, 'Parrainage reçu par le conseil constitutionnel')]),
         ),
     ]
