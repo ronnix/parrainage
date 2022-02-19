@@ -1,9 +1,9 @@
 a, a:focus, a:hover {
-    color: #521A80;
+    color: #35378d;
 }
 
 header {
-    color: #521A80;
+    color: #35378d;
     font-size: 1.25rem;
     padding: 1.4rem 2rem 3.5rem;
 }
@@ -13,7 +13,7 @@ section {
 }
 
 .btn-primary {
-    background-color: #521A80;
+    background-color: #35378d;
     border-color: #431559;
 }
 
