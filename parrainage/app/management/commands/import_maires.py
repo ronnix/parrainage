@@ -50,6 +50,7 @@ def merge_csv(tsv_maires, csv_mairies, csv_population):
         charge_rne(tsv_maires)
         .merge(
             charge_annuaire_mairies(csv_mairies),
+            how="left",
             left_on="Code de la commune",
             right_on="codeInsee",
             validate="one_to_one",
@@ -61,11 +62,13 @@ def merge_csv(tsv_maires, csv_mairies, csv_population):
         )
         .merge(
             charge_population_communes(csv_population),
+            how="left",
             left_on="Code de la commune",
             right_on="CODE",
             validate="one_to_one",
         )
         .drop(columns=["CODE"])
+        .fillna("")
     )
     for _, row in df.iterrows():
         yield dict(row)
