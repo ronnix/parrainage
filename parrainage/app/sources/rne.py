@@ -46,8 +46,14 @@ def parse_elu(row, role):
         city_latitude=row.get("Latitude", ""),
         city_longitude=row.get("Longitude", ""),
         city_address=row.get("Adresse", ""),
-        city_size=row.get("PMUN", None),
+        city_size=int_or_none(row.get("PMUN", "")),
         public_email=row.get("Email", ""),
         public_phone=row.get("Téléphone", ""),
         public_website=row.get("Url", ""),
     )
+
+
+def int_or_none(value):
+    if not value:
+        return None
+    return int(value)
