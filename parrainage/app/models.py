@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -9,9 +10,9 @@ from django.utils.functional import cached_property
 class Elu(models.Model):
 
     GENDER_CHOICES = (
-        ('H', 'Homme'),
-        ('F', 'Femme'),
-        ('', 'Inconnu'),
+        ("H", "Homme"),
+        ("F", "Femme"),
+        ("", "Inconnu"),
     )
 
     STATUS_NOTHING = 1
@@ -23,34 +24,36 @@ class Elu(models.Model):
     STATUS_RECEIVED = 30
 
     STATUS_CHOICES = (
-        (STATUS_NOTHING, 'Rien n\'a été fait'),
-        (STATUS_CONTACTED, 'Démarches en cours'),
-        (STATUS_TO_CONTACT, 'Charlotte doit recontacter l\'élu'),
-        (STATUS_TO_CONTACT_TEAM, 'L\'élu souhaite être recontacté'),
-        (STATUS_REFUSED, 'Parrainage refusé'),
-        (STATUS_ACCEPTED, 'Parrainage accepté'),
-        (STATUS_RECEIVED, 'Parrainage reçu par le conseil constitutionnel'),
+        (STATUS_NOTHING, "Rien n'a été fait"),
+        (STATUS_CONTACTED, "Démarches en cours"),
+        (STATUS_TO_CONTACT, f"{settings.NOM_CANDIDATURE} doit recontacter l'élu"),
+        (STATUS_TO_CONTACT_TEAM, "L'élu souhaite être recontacté"),
+        (STATUS_REFUSED, "Parrainage refusé"),
+        (STATUS_ACCEPTED, "Parrainage accepté"),
+        (STATUS_RECEIVED, "Parrainage reçu par le conseil constitutionnel"),
     )
 
     ROLE_CHOICES = (
-        ('M', 'Maire'),
-        ('CD', 'Conseiller départemental'),
-        ('CR', 'Conseiller régional'),
-        ('D', 'Député'),
-        ('S', 'Sénateur'),
-        ('DE', 'Député européen'),
-        ('A', 'Autre mandat'),
+        ("M", "Maire"),
+        ("CD", "Conseiller départemental"),
+        ("CR", "Conseiller régional"),
+        ("D", "Député"),
+        ("S", "Sénateur"),
+        ("DE", "Député européen"),
+        ("A", "Autre mandat"),
     )
 
     PUBLIC_STATUS = {
-        'nothing-done': 'Rien n\'a été fait',
-        'in-progress': 'En cours',
-        'done': 'Terminé',
+        "nothing-done": "Rien n'a été fait",
+        "in-progress": "En cours",
+        "done": "Terminé",
     }
 
     first_name = models.CharField(max_length=255, db_index=True)
     family_name = models.CharField(max_length=255, db_index=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    gender = models.CharField(
+        verbose_name="genre", max_length=1, choices=GENDER_CHOICES, blank=True
+    )
     birthdate = models.DateField(blank=True, null=True)
     role = models.CharField(max_length=2, choices=ROLE_CHOICES)
     comment = models.TextField(blank=True)
@@ -64,8 +67,12 @@ class Elu(models.Model):
     private_email = models.CharField(max_length=255, blank=True)
     private_phone = models.CharField(max_length=255, blank=True)
 
-    status = models.IntegerField(default=STATUS_NOTHING, choices=STATUS_CHOICES,
-                                 db_index=True)
+    status = models.IntegerField(
+        verbose_name="statut",
+        default=STATUS_NOTHING,
+        choices=STATUS_CHOICES,
+        db_index=True,
+    )
 
     department = models.CharField(max_length=3, blank=True, db_index=True)
     city = models.CharField(max_length=255, blank=True, db_index=True)
@@ -78,66 +85,68 @@ class Elu(models.Model):
 
     nuance_politique = models.CharField(max_length=5, blank=True, db_index=True)
 
-    assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL,
-                                    blank=True, null=True)
+    assigned_to = models.ForeignKey(
+        User, on_delete=models.SET_NULL, blank=True, null=True
+    )
 
-    private_token = models.CharField(max_length=20, editable=False,
-                                     default=get_random_string)
+    private_token = models.CharField(
+        max_length=20, editable=False, default=get_random_string
+    )
 
     public_assign_count = models.IntegerField(default=0, db_index=True)
 
     def __str__(self):
-        name = '{} {}'.format(self.first_name, self.family_name)
-        if self.role == 'M':
-            name += ' (Maire de {})'.format(self.city)
-        elif self.role == 'CD':
-            name += ' (Conseiller départemental {})'.format(self.department)
-        elif self.role == 'CR':
-            name += ' (Conseiller régional)'
-        elif self.role == 'D':
-            name += ' (Député)'
-        elif self.role == 'S':
-            name += ' (Sénateur)'
-        elif self.role == 'DE':
-            name += ' (Député européen)'
+        name = "{} {}".format(self.first_name, self.family_name)
+        if self.role == "M":
+            name += " (Maire de {})".format(self.city)
+        elif self.role == "CD":
+            name += " (Conseiller départemental {})".format(self.department)
+        elif self.role == "CR":
+            name += " (Conseiller régional)"
+        elif self.role == "D":
+            name += " (Député)"
+        elif self.role == "S":
+            name += " (Sénateur)"
+        elif self.role == "DE":
+            name += " (Député européen)"
         return name
 
     def get_absolute_url(self):
-        return reverse('elu-detail', args=[str(self.id)])
+        return reverse("elu-detail", args=[str(self.id)])
 
     def link(self):
-        return format_html('<a href="{}">{}</a>',
-                           self.get_absolute_url(),
-                           self.__str__())
+        return format_html(
+            '<a href="{}">{}</a>', self.get_absolute_url(), self.__str__()
+        )
+
     link.allow_tags = True
 
     @cached_property
     def public_status(self):
         if self.status >= Elu.STATUS_REFUSED:
-            return 'done'
+            return "done"
         if self.assigned_to or self.status != Elu.STATUS_NOTHING:
-            return 'in-progress'
-        return 'nothing-done'
+            return "in-progress"
+        return "nothing-done"
 
     def get_public_status_display(self):
-        return Elu.PUBLIC_STATUS.get(self.public_status, 'Inconnu')
+        return Elu.PUBLIC_STATUS.get(self.public_status, "Inconnu")
 
 
 class Note(models.Model):
-    elu = models.ForeignKey(Elu, on_delete=models.CASCADE,
-                            related_name='notes')
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
-                             related_name='notes')
+    elu = models.ForeignKey(Elu, on_delete=models.CASCADE, related_name="notes")
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="notes"
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
     note = models.TextField()
 
     class Meta:
-        ordering = ('-timestamp',)
+        ordering = ("-timestamp",)
 
 
 class UserSettings(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,
-                                related_name='settings')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="settings")
     phone = models.CharField(max_length=255, blank=True)
     city = models.CharField(max_length=255, blank=True)
     department = models.CharField(max_length=3, blank=True, db_index=True)
