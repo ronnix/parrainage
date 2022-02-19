@@ -18,6 +18,7 @@ MANDAT = {
     "CD": "Conseiller départemental",
     "CR": "Conseiller régional",
     "D": "Député",
+    "DE": "Député européen",
     "S": "Sénateur",
 }
 
@@ -34,7 +35,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--mandat",
             help="Type de mandat",
-            choices=["CD", "CR", "CC", "S", "D"],
+            choices=["CD", "CR", "CC", "S", "D", "DE"],
             required=True,
         )
 
