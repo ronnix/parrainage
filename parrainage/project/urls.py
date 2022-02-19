@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^$', HomePageView.as_view(), name='home'),
     url(r'^elu/$', EluListView.as_view(), name='elu-list'),
     url(r'^elu/(?P<pk>[0-9]+)/$', EluDetailView.as_view(), name='elu-detail'),
-    url(r'^user/(?P<username>[a-z]+)/$', UserDetailView.as_view(),
+    url(r'^user/(?P<username>[a-zA-Z]+)/$', UserDetailView.as_view(),
         name='user-detail'),
     url(r'^csv/$', EluCSVForMap.as_view(), name='elu-csv-for-map'),
     url(r'^csv/mailing/$', EluCSVForMailing.as_view(), name='elu-csv-for-map'),
