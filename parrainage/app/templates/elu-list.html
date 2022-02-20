@@ -8,14 +8,13 @@
         Filtrer
         <select name="department">
             <option value="">Tous les départements</option>
-            {% for value, label, selected in departments %}
-            <option value="{{ value }}" {{ selected }}>{{ label }}</option>
+            {% for value, label, selected, disabled in departments %}
+            <option value="{{ value }}"{{ selected }}{{ disabled }}>{{ label }}</option>
             {% endfor %}
         </select>
         <select name="status">
-            <option value="">Tous les statuts</option>
-            {% for value, label, selected in statuses %}
-            <option value="{{ value }}" {{ selected }}>{{ label }}</option>
+            {% for value, label, selected, disabled in statuses %}
+            <option value="{{ value }}"{{ selected }}{{ disabled }}>{{ label }}</option>
             {% endfor %}
         </select>
         <input type="submit" value="Appliquer">
