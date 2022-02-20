@@ -148,34 +148,70 @@ class EluListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(EluListView, self).get_context_data(**kwargs)
-        context["departments"] = [
+        context["departments"] = self.get_departements_choices()
+        context["statuses"] = self.get_status_choices()
+        return context
+
+    def get_departements_choices(self):
+        choices = [(str(dpt), str(dpt)) for dpt in get_department_list(self.request)]
+        return self._make_options(choices, self.request.GET.get("department"))
+
+    def get_status_choices(self):
+        choices = [
+            ("", "Tous les statuts"),
+            ("", "---"),
             (
-                value,
-                value,
-                "selected" if self.request.GET.get("department") == value else "",
-            )
-            for value in get_department_list(self.request)
-        ]
-        context["statuses"] = [
+                ",".join(
+                    map(
+                        str,
+                        [
+                            Elu.STATUS_NOTHING,
+                            Elu.STATUS_CONTACTED,
+                            Elu.STATUS_TO_CONTACT,
+                            Elu.STATUS_TO_CONTACT_TEAM,
+                        ],
+                    )
+                ),
+                "En cours",
+            ),
+            (
+                ",".join(
+                    map(
+                        str,
+                        [
+                            Elu.STATUS_REFUSED,
+                            Elu.STATUS_ACCEPTED,
+                            Elu.STATUS_RECEIVED,
+                        ],
+                    )
+                ),
+                "Terminés",
+            ),
+            ("", "---"),
+        ] + list(Elu._meta.get_field("status").choices)
+        return self._make_options(choices, self.request.GET.get("status"))
+
+    def _make_options(self, choices, current):
+        return [
             (
                 value,
                 label,
-                "selected" if self.request.GET.get("status") == str(value) else "",
+                " selected" if current == str(value) else "",
+                " disabled" if label.startswith("-") else "",
             )
-            for value, label in Elu._meta.get_field("status").choices
+            for value, label in choices
         ]
-        return context
 
     def get_queryset(self):
         qs = Elu.objects.all()
         if self.request.user.is_authenticated():
-            status = self.request.GET.get("status", "")
-            if status:
+            statuses = self.request.GET.get("status", "").split(",")
+            if statuses:
                 allowed_values = {
                     str(value) for value, _ in Elu._meta.get_field("status").choices
                 }
-                if status in allowed_values:
-                    qs = qs.filter(status=status)
+                if all(status in allowed_values for status in statuses):
+                    qs = qs.filter(status__in=[int(status) for status in statuses])
 
         if "department" in self.request.GET:
             qs = qs.filter(department=self.request.GET["department"])
