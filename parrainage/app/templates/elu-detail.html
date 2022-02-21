@@ -96,10 +96,6 @@
                         <button type="submit" class="btn btn-primary">M’assigner {% if object.gender == "F" %}cette élue{% else %}cet élu{% endif %}</button>
                     </form>
                 {% endif %}
-
-                {% if object.public_assign_count > 0 %}
-                <p class="public-assign">{% if object.gender == "F" %}Cette élue{% else %}Cet élu{% endif %} a aussi été assigné à {{ object.public_assign_count }} utilisateur{% if object.public_assign_count > 1 %}s{% endif %} non connecté{% if object.public_assign_count > 1 %}s{% endif %}.</p>
-                {% endif %}
             </dl>
             {% endif %}
         </div>
