@@ -1,3 +1,8 @@
+:root {
+    --primary-color: #431559;
+    --secondary-color: rgb(252, 218, 124);
+    --secondary-color-light: rgba(252, 218, 124, 0.33);
+}
 a, a:focus, a:hover {
     color: #35378d;
 }
@@ -14,12 +19,12 @@ section {
 
 .btn-primary {
     background-color: #35378d;
-    border-color: #431559;
+    border-color: var(--primary-color);
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:focus.btn-primary:active {
-    background-color: #431559;
-    border-color: #431559;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 .header-content {
@@ -53,4 +58,25 @@ section {
     #logo {
         margin-bottom: 6px;
     }
+}
+
+.bloc {
+    padding: 1.2rem;
+}
+.bloc > *:last-child {
+    margin-bottom: 0;
+}
+
+.bloc h2 {
+    font-size: 135%;
+    margin-bottom: 1rem;
+}
+.bloc.statut {
+    background-color: var(--secondary-color-light);
+    border-radius: 1rem;
+}
+
+.bloc.statut .public-assign {
+    margin-top: 1rem;
+    font-style: italic;
 }
