@@ -66,6 +66,7 @@ def get_department_data():
                 "count_elus": 0,
                 "count_nothing": 0,
                 "count_accepted": 0,
+                "count_blocked": 0,
                 "count_refused": 0,
                 "count_contacted": 0,
                 "count_to_contact": 0,
@@ -80,6 +81,8 @@ def get_department_data():
             dep_stats["count_contacted"] += count
         elif status == Elu.STATUS_TO_CONTACT or status == Elu.STATUS_TO_CONTACT_TEAM:
             dep_stats["count_to_contact"] += count
+        elif status == Elu.STATUS_BLOCKED:
+            dep_stats["count_blocked"] += count
         elif status == Elu.STATUS_REFUSED:
             dep_stats["count_refused"] += count
         elif status >= Elu.STATUS_ACCEPTED:
@@ -170,6 +173,7 @@ class EluListView(ListView):
                             Elu.STATUS_CONTACTED,
                             Elu.STATUS_TO_CONTACT,
                             Elu.STATUS_TO_CONTACT_TEAM,
+                            Elu.STATUS_BLOCKED,
                         ],
                     )
                 ),
