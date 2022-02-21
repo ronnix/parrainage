@@ -73,8 +73,8 @@
             <div class="form-group">
             <label for="department">Département:</label>
             <select class="form-control" name="department" id="department">
-                {% for d in departements %}
-                <option>{{ d }}</option>
+                {% for value, label, selected, disabled in departements %}
+                <option value="{{ value }}"{{ selected }}{{ disabled }}>{{ label }}</option>
                 {% endfor %}
             </select>
             </div>

@@ -19,6 +19,18 @@ def global_context(request):
     }
 
 
+def make_options(choices, current):
+    return [
+        (
+            value,
+            label,
+            " selected" if current == str(value) else "",
+            " disabled" if label.startswith("-") else "",
+        )
+        for value, label in choices
+    ]
+
+
 def get_assigned_elus(user, exclude_finished=True):
     if exclude_finished:
         qs = user.elu_set.filter(status__lt=Elu.STATUS_REFUSED)
@@ -26,6 +38,13 @@ def get_assigned_elus(user, exclude_finished=True):
         qs = user.elu_set.all()
     return qs.annotate(last_updated=Max("notes__timestamp")).order_by(
         "status", "last_updated"
+    )
+
+
+def get_department_options(request):
+    return make_options(
+        [(str(dpt), str(dpt)) for dpt in get_department_list(request)],
+        get_default_department(request),
     )
 
 
@@ -44,6 +63,13 @@ def get_department_list(request):
     ):
         departments.add(request.user.settings.department)
     return list(sorted(departments))
+
+
+def get_default_department(request):
+    settings = getattr(request.user, "settings", None)
+    if settings and settings.department:
+        return settings.department
+    return "01"
 
 
 def get_department_data():
@@ -118,7 +144,7 @@ class HomePageView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated():
-            context["departements"] = get_department_list(self.request)
+            context["departements"] = get_department_options(self.request)
             context["user_count"] = User.objects.count()
             context["elus_contacted"] = Elu.objects.filter(
                 status__gt=Elu.STATUS_NOTHING
@@ -158,7 +184,7 @@ class EluListView(ListView):
             ("tous", "Tous les départements"),
             ("", "---"),
         ] + [(str(dpt), str(dpt)) for dpt in get_department_list(self.request)]
-        return self._make_options(choices, self.request.GET.get("department"))
+        return make_options(choices, self.request.GET.get("department"))
 
     def get_status_choices(self):
         choices = [
@@ -194,10 +220,10 @@ class EluListView(ListView):
             ),
             ("", "---"),
         ] + list(Elu._meta.get_field("status").choices)
-        return self._make_options(choices, self.request.GET.get("status"))
+        return make_options(choices, self.request.GET.get("status"))
 
     def get_sort_keys(self):
-        return self._make_options(
+        return make_options(
             [
                 ("city", "Nom de la commune"),
                 ("", "Nom de l’élu"),
@@ -206,17 +232,6 @@ class EluListView(ListView):
             ],
             self.request.GET.get("sort"),
         )
-
-    def _make_options(self, choices, current):
-        return [
-            (
-                value,
-                label,
-                " selected" if current == str(value) else "",
-                " disabled" if label.startswith("-") else "",
-            )
-            for value, label in choices
-        ]
 
     def get_queryset(self):
         qs = Elu.objects.all()
@@ -413,7 +428,7 @@ class UserDetailView(DetailView):
             context["assigned_elus"] = get_assigned_elus(
                 self.get_object(), exclude_finished=False
             )
-            context["departements"] = get_department_list(self.request)
+            context["departements"] = get_department_options(self.request)
         return context
 
     def post(self, request, *args, **kwargs):
