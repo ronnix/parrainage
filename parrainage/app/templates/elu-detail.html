@@ -7,10 +7,11 @@
 {% if request.GET.assigned %}
 <div class="container">
     <div class="alert alert-success">
-	Merci encore pour votre aide précieuse ! Voici la page du maire
-	que nous vous avons assigné, il s'agit d'un maire que nous pensons
-	etre sensible à notre démarche. Si vous pouviez le contacter
-	rapidement, cela nous aiderait énormément. Merci beaucoup !
+    Merci encore pour votre aide précieuse ! Voici la page
+    {% if object.gender == "F" %}de la{% else %}du{% endif %} maire que nous vous avons assigné,
+    il s’agit d’{% if object.gender == "F" %}une{% else %}un{% endif %} maire que nous pensons
+    être sensible à notre démarche. Si vous pouviez {% if object.gender == "F" %}la{% else %}le{% endif %}
+    contacter rapidement, cela nous aiderait énormément. Merci beaucoup !
     </div>
 </div>
 {% endif %}
@@ -18,166 +19,173 @@
 <div class="container">
     {% if object.status == object.STATUS_REFUSED %}
     <div class="alert alert-danger">
-	Apparemment {{ object }} a déjà donné son parrainage à un
-	autre candidat ou nous a déjà notifié son refus de
-	parrainer {{ candidature }}… désolé.
+    Apparemment {{ object }} a déjà donné son parrainage à un
+    autre candidat ou nous a déjà notifié son refus de
+    parrainer {{ candidature }}… désolé.
     </div>
     {% elif object.status >= object.STATUS_ACCEPTED %}
     <div class="alert alert-success">
-	{{ object }} a déjà accepté de parrainer {{ candidature }}.
+    {{ object }} a déjà accepté de parrainer {{ candidature }}.
     </div>
     {% elif object.status < object.STATUS_REFUSED %}
     <div class="alert alert-success">
-	Apparemment, {{ object }} n'a pas encore donné son parrainage,
-	pourriez-vous le <a
-	    href="https://docs.google.com/document/d/1biDvz9WYIavvQIoegl_oe-b_u5w3_pKNe2QatceW6TQ/edit?usp=sharing">démarcher</a> pour le
-	convaincre de parrainer {{ candidature }} ?
+    Apparemment, {{ object }} n’a pas encore donné son parrainage,
+    pourriez-vous {% if object.gender == "F" %}la{% else %}le{% endif %} démarcher pour
+    {% if object.gender == "F" %}la{% else %}le{% endif %} convaincre de parrainer {{ candidature }} ?
     </div>
     {% endif %}
 </div>
 {% endif %}
 <div class="container-fluid">
-    <div class="col-xs-12 col-md-4">
-	<h2>Infos de contact</h2>
-	<p><strong>Email:</strong> {{ object.public_email|urlize }}<br/>
-	<strong>Téléphone:</strong> <a href="tel:{{ object.public_phone }}">{{ object.public_phone }}</a><br/>
-	<strong>Site web:</strong> {{ object.public_website|urlize }}<br/>
-	{% if object.city %}
-	<strong>Adresse:</strong> {{ object.city_address|linebreaksbr }}
-	{{ object.city_zipcode }} {{ object.city }}<br/>
-	{% endif %}
-	</p>
-	{% if user.is_authenticated %}
-	<p><strong>Email privé:</strong> {{ object.private_email|urlize }}<br/>
-	<strong>Téléphone privé:</strong> <a href="tel:{{ object.private_phone }}">{{ object.private_phone }}</a></p>
-	{% endif %}
-	<p><strong>Réseaux sociaux:</strong>
-	<a title="Recherche sur Faceebook" href="https://www.facebook.com/search/all/?q={{ object.first_name|urlencode }}%20{{ object.family_name|urlencode }}">Facebook</a>
-	<a title="Recherche sur Twitter" href="https://twitter.com/search?f=users&q={{ object.first_name|urlencode }}%20{{ object.family_name|urlencode }}&src=typd">Twitter</a></p>
-
+    <div class="bloc contact col-xs-12 col-md-4">
+        <h2>Infos de contact</h2>
+        <p><strong>Email :</strong> {{ object.public_email|urlize }}<br/>
+        <strong>Téléphone :</strong> <a href="tel:{{ object.public_phone }}">{{ object.public_phone }}</a><br/>
+        <strong>Site web :</strong> {{ object.public_website|urlize }}<br/>
+        {% if object.city %}
+        <strong>Adresse :</strong> {{ object.city_address|linebreaksbr }}
+        {{ object.city_zipcode }} {{ object.city }}<br/>
+        {% endif %}
+        </p>
+        {% if user.is_authenticated %}
+        <p><strong>Email privé :</strong> {{ object.private_email|urlize }}<br/>
+        <strong>Téléphone privé :</strong> <a href="tel:{{ object.private_phone }}">{{ object.private_phone }}</a></p>
+        {% endif %}
+        <p><strong>Réseaux sociaux :</strong>
+        <a title="Recherche sur Faceebook" href="https://www.facebook.com/search/all/?q={{ object.first_name|urlencode }}%20{{ object.family_name|urlencode }}">Facebook</a>
+        <a title="Recherche sur Twitter" href="https://twitter.com/search?f=users&q={{ object.first_name|urlencode }}%20{{ object.family_name|urlencode }}&src=typd">Twitter</a></p>
+    </div>
+    <div class="bloc extra col-xs-12 col-md-4">
+        <h2>Autres infos</h2>
+        <p><strong>Date de naissance :</strong> {{ object.birthdate }} ({{ object.birthdate|timesince }})<br/>
+        <strong>Couleur politique de sa liste :</strong> {{ object.nuance_politique|default:"inconnue" }}<br/>
+            <strong>Commentaires:</strong> {{ object.comment }}<br/>
+        <strong>Mandat :</strong> {{ object.get_role_display }}<br/>
+        {% if object.city %}
+        <strong>Commune :</strong> {{ object.city }}<br/>
+        <strong>Population commune :</strong> {{ object.city_size }}<br/>
+            <strong>Horaires mairie :</strong> <a target="_blank" href="https://lannuaire.service-public.fr/recherche?whoWhat=mairie&where={{ object.city_zipcode|urlencode }}{{ ' '|urlencode }}{{ object.city|urlencode }}">ouvrir</a><br/>
+        {% endif %}
+        <strong>Département :</strong> <a href="{% url 'elu-list' %}?department={{ object.department }}&sort=priority">{{ object.department }}</a>
+        </p>
     </div>
     <div class="col-xs-12 col-md-4">
-	<h2>Autres infos</h2>
-	<p><strong>Date de naissance:</strong> {{ object.birthdate }} ({{ object.birthdate|timesince }})<br/>
-	<strong>Couleur politique de sa liste:</strong> {{ object.nuance_politique|default:"inconnue" }}<br/>
-        <strong>Commentaires:</strong> {{ object.comment }}<br/>
-	<strong>Fonction:</strong> {{ object.get_role_display }}<br/>
-	{% if object.city %}
-	<strong>Commune:</strong> {{ object.city }}<br/>
-	<strong>Population commune:</strong> {{ object.city_size }}<br/>
-        <strong>Horaires mairie:</strong> <a target="_blank" href="https://lannuaire.service-public.fr/recherche?whoWhat=mairie&where={{ object.city_zipcode|urlencode }}{{ " "|urlencode }}{{ object.city|urlencode }}">ouvrir</a><br/>
-	{% endif %}
-	<strong>Département:</strong> <a href="{% url 'elu-list' %}?department={{ object.department }}&sort=priority">{{ object.department }}</a>
-	</p>
-    </div>
-    <div class="col-xs-12 col-md-4">
-	<h2>Statut</h2>
-	{% if user.is_authenticated %}
-	<p><strong>Statut:</strong> {{ object.get_status_display }}<br/>
-	<strong>Assigné à:</strong> {% include 'userlink.html' with u=object.assigned_to %}</p>
-	<p>
-	{% if object.assigned_to == user %}
-	<form method="POST">
-	    {% csrf_token %} 
-	    <input type="hidden" name="action" value="unassign"/>
-	    <button type="submit" class="btn btn-primary">Supprimer l'assignation</button>
-	</form>
-	{% else %}
-	<form method="POST">
-	    {% csrf_token %} 
-	    <input type="hidden" name="action" value="assign"/>
-	    <button type="submit" class="btn btn-primary">M'assigner cet élu</button>
-	</form>
-	{% endif %}
-	</p>
-	{% else %}
-	<p><strong>Statut:</strong> {{ object.get_public_status_display }}</p>
-	{% endif %}
-	{% if perms.app.can_change_elu %}
-	<p>
-	<a href="/admin/app/elu/{{ object.id }}/">Page de l'élu sur
-	    l'interface d'administration</a><br/>
+        <div class="bloc statut">
+            <h2>
+                Statut :
+                {% if user.is_authenticated %}
+                {{ object.get_status_display }}
+                {% else %}
+                {{ object.get_public_status_display }}
+                {% endif %}
+            </h2>
+            {% if user.is_authenticated %}
+                <strong>Assigné à :</strong>
+                {% include 'userlink.html' with u=object.assigned_to default='personne' %}
+                {% if object.assigned_to == user %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="unassign"/>
+                        <button type="submit" class="btn btn-primary">Supprimer l’assignation</button>
+                    </form>
+                {% else %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="assign"/>
+                        <button type="submit" class="btn btn-primary">M’assigner {% if object.gender == "F" %}cette élue{% else %}cet élu{% endif %}</button>
+                    </form>
+                {% endif %}
 
-	<strong>Nombre d'assignations publiques</strong>:
-	{{ object.public_assign_count }}
-	</p>
-	{% endif %}
+                {% if object.public_assign_count > 0 %}
+                <p class="public-assign">{% if object.gender == "F" %}Cette élue{% else %}Cet élu{% endif %} a aussi été assigné à {{ object.public_assign_count }} utilisateur{% if object.public_assign_count > 1 %}s{% endif %} non connecté{% if object.public_assign_count > 1 %}s{% endif %}.</p>
+                {% endif %}
+            </dl>
+            {% endif %}
+        </div>
+        {% if perms.app.can_change_elu %}
+        <div class="bloc">
+            <p>
+                <a href="/admin/app/elu/{{ object.id }}/">Page de l’{% if object.gender == "F" %}élue{% else %}élu{% endif %} sur
+            l’interface d’administration</a>
+            </p>
+        </div>
+        {% endif %}
     </div>
 
     {% if user.is_authenticated %}
     <div class="col-xs-12">
-	<h2>Historique</h2>
-	<table class="table table-striped">
-	    <tr>
-		<th>Horodatage</th>
-		<th>Qui</th>
-		<th>Contenu de la note</th>
-	    </tr>
-	    {% for note in object.notes.all %}
-	    <tr>
-		<td>{{ note.timestamp }}<br/>(il y a {{ note.timestamp|timesince }})</td>
-		<td>{% include 'userlink.html' with u=note.user %}</td>
-		<td>{{ note.note|linebreaksbr }}</td>
-	    </tr>
-	    {% endfor %}
-	</table>
+    <h2>Historique</h2>
+    <table class="table table-striped">
+        <tr>
+        <th>Horodatage</th>
+        <th>Qui</th>
+        <th>Contenu de la note</th>
+        </tr>
+        {% for note in object.notes.all %}
+        <tr>
+        <td>{{ note.timestamp }}<br/>(il y a {{ note.timestamp|timesince }})</td>
+        <td>{% include 'userlink.html' with u=note.user %}</td>
+        <td>{{ note.note|linebreaksbr }}</td>
+        </tr>
+        {% endfor %}
+    </table>
     </div>
     <div class="col-xs-12">
-	<h3>Ajout d'une note et mise à jour du statut</h3>
-	<form method="POST">
-	    {% if object.status != object.STATUS_RECEIVED %}
-	    <div class="form-group">
-		<label for="newStatus">Nouveau statut:</label>
-		<select class="form-control" id="newStatus" name="status">
-		    <option value="" selected>Statut inchangé</option>
-		    {% for value, text in object.STATUS_CHOICES %}
-		    <option value="{{ value }}">{{ text }}</option>
-		    {% endfor %}
-		</select>
-	    </div>
-	    {% endif %}
-	    <div class="form-group">
-		<label for="newNote">Nouvelle note:</label>
-		<textarea class="form-control" id="newNote" name="note" rows="3"></textarea>
-	    </div>
-	    {% csrf_token %} 
-	    <input type="hidden" name="action" value="add_note"/>
-	    <button type="submit" class="btn btn-primary">Mettre à jour le
-		statut et/ou ajouter la note</button>
-	</form>
+    <h3>Ajout d’une note et mise à jour du statut</h3>
+    <form method="POST">
+        {% if object.status != object.STATUS_RECEIVED %}
+        <div class="form-group">
+        <label for="newStatus">Nouveau statut:</label>
+        <select class="form-control" id="newStatus" name="status">
+            <option value="" selected>Statut inchangé</option>
+            {% for value, text in object.STATUS_CHOICES %}
+            <option value="{{ value }}">{{ text }}</option>
+            {% endfor %}
+        </select>
+        </div>
+        {% endif %}
+        <div class="form-group">
+        <label for="newNote">Nouvelle note:</label>
+        <textarea class="form-control" id="newNote" name="note" rows="3"></textarea>
+        </div>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_note"/>
+        <button type="submit" class="btn btn-primary">Mettre à jour le
+        statut et/ou ajouter la note</button>
+    </form>
     </div>
     <div class="col-xs-12">
-	<p></p>
-	<h3>Mise à jour des coordonnées privées</h3>
-	<form method="POST" class="form-inline">
-	    <div class="form-group">
-		<label for="newEmail">Email privé:</label>
-		<input type="text" class="form-control" id="newEmail" name="private_email" value="{{ object.private_email }}">
-	    </div>
-	    <div class="form-group">
-		<label for="newPhone">Téléphone privé:</label>
-		<input type="text" class="form-control" id="newPhone" name="private_phone" value="{{ object.private_phone }}">
-	    </div>
-	    {% csrf_token %} 
-	    <input type="hidden" name="action" value="update_contact"/>
-	    <button type="submit" class="btn btn-primary">Mettre à jour les coordonnées</button>
-	</form>
+    <p></p>
+    <h3>Mise à jour des coordonnées privées</h3>
+    <form method="POST" class="form-inline">
+        <div class="form-group">
+        <label for="newEmail">Email privé :</label>
+        <input type="text" class="form-control" id="newEmail" name="private_email" value="{{ object.private_email }}">
+        </div>
+        <div class="form-group">
+        <label for="newPhone">Téléphone privé :</label>
+        <input type="text" class="form-control" id="newPhone" name="private_phone" value="{{ object.private_phone }}">
+        </div>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_contact"/>
+        <button type="submit" class="btn btn-primary">Mettre à jour les coordonnées</button>
+    </form>
     </div>
     {% endif %}
     {% if object.role == 'M' %}
     {% if user.is_authenticated or request.GET.assigned %}
     <div class="col-xs-12 m-t-1">
-	{% if assigned %}
-	<h3>Actions possibles</h3>
-	<p><a href="{% url 'assign' %}?action=unassign&elu_id={{ object.id }}"
-	    class="btn btn-primary">Finalement, je ne contacterai pas cet élu</a>
-	   <a href="{% url 'assign' %}?action=assign&forcenew=1"
-	   class="btn btn-primary">J'ai contacté cet élu, j'en veux un autre</a>
-	</p>
-	{% endif %}
-	<h3>Aide au démarchage téléphonique</h3>
-	<p>D'abord vérifiez les <a target="_blank" href="https://lannuaire.service-public.fr/recherche?whoWhat=mairie&where={{ object.city_zipcode|urlencode }}{{ ' '|urlencode }}{{ object.city|urlencode }}">horaires de la mairie</a> et planifiez votre appel à une heure
-	d'ouverture.</p>
+    {% if assigned %}
+    <h3>Actions possibles</h3>
+    <p><a href="{% url 'assign' %}?action=unassign&elu_id={{ object.id }}"
+        class="btn btn-primary">Finalement, je ne contacterai pas {% if object.gender == "F" %}cette élue{% else %}cet élu{% endif %}</a>
+       <a href="{% url 'assign' %}?action=assign&forcenew=1"
+       class="btn btn-primary">J’ai contacté {% if object.gender == "F" %}cette élue,cet élu'}}, j’en veux {{object.gender=='F'|yesno:'cette élue{% else %}cet élu{% endif %}</a>
+    </p>
+    {% endif %}
+    <h3>Aide au démarchage téléphonique</h3>
+    <p>D’abord vérifiez les <a target="_blank" href="https://lannuaire.service-public.fr/recherche?whoWhat=mairie&where={{ object.city_zipcode|urlencode }}{{ ' '|urlencode }}{{ object.city|urlencode }}">horaires de la mairie</a> et planifiez votre appel à une heure
+    d’ouverture.</p>
     </div>
     {% endif %}
     {% endif %}
