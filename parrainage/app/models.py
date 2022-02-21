@@ -19,6 +19,7 @@ class Elu(models.Model):
     STATUS_CONTACTED = 2
     STATUS_TO_CONTACT = 3
     STATUS_TO_CONTACT_TEAM = 4
+    STATUS_BLOCKED = 5
     STATUS_REFUSED = 10
     STATUS_ACCEPTED = 20
     STATUS_RECEIVED = 30
@@ -28,6 +29,7 @@ class Elu(models.Model):
         (STATUS_CONTACTED, "Démarches en cours"),
         (STATUS_TO_CONTACT, f"{settings.NOM_CANDIDATURE} doit recontacter l'élu"),
         (STATUS_TO_CONTACT_TEAM, "L'élu souhaite être recontacté"),
+        (STATUS_BLOCKED, "Parrainage bloqué"),
         (STATUS_REFUSED, "Parrainage refusé"),
         (STATUS_ACCEPTED, "Parrainage accepté"),
         (STATUS_RECEIVED, "Parrainage reçu par le conseil constitutionnel"),

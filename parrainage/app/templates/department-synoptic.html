@@ -5,27 +5,29 @@
 <div class="container">
     <table class="table table-sm table-striped">
 	<tr>
-	    <th rowspan="2" title="Département">Dép.</th>
-	    <th colspan="6">Statut des élus</th>
+	    <th rowspan="2" title="Département">Dépt.</th>
+	    <th colspan="7">Statut des élus</th>
 	    <th rowspan="2">Bénévoles</th>
 	</tr>
 	<tr>
-	    <th title="Nombre total d'élu">Tot.</th>
 	    <th title="Rien fait">Rien</th>
 	    <th title="Contactés">Cont.</th>
-	    <th title="À contacter">À cont.</th>
-	    <th title="Parrainage Accepté">Acc.</th>
-	    <th title="Parrainage refusé">Ref.</th>
+	    <th title="À recontacter">À cont.</th>
+	    <th title="Parrainage bloqué">Blo.</th>
+	    <th title="Parrainage refusé">❌</th>
+	    <th title="Parrainage accepté">✅</th>
+	    <th title="Nombre total d’élus">Total</th>
 	</tr>
 	{% for data in departments_data %}
 	<tr>
 	    <td>{{ data.department }}</td>
-	    <td><a title="Tous les élus" href="{% url 'elu-list' %}?department={{ data.department }}&sort=priority">{{ data.count_elus }}</a></td>
 	    <td><a title="Élus où rien n'a été fait" href="{% url 'elu-list' %}?department={{ data.department }}&status=1&sort=priority">{{ data.count_nothing }}</a></td>
 	    <td><a title="Élus contactés" href="{% url 'elu-list' %}?department={{ data.department }}&status=2&sort=priority">{{ data.count_contacted }}</a></td>
-	    <td><a title="Élus à recontacter" href="{% url 'elu-list' %}?department={{ data.department }}&status=3&sort=priority">{{ data.count_to_contact }}</a></td>
-	    <td><a title="Élus ayant parrainé" href="{% url 'elu-list' %}?department={{ data.department }}&status=20">{{ data.count_accepted }}</a></td>
+	    <td><a title="Élus à recontacter" href="{% url 'elu-list' %}?department={{ data.department }}&status=3,4&sort=priority">{{ data.count_to_contact }}</a></td>
+	    <td><a title="Élus bloqués" href="{% url 'elu-list' %}?department={{ data.department }}&status=5">{{ data.count_blocked }}</a></td>
 	    <td><a title="Élus ayant refusé" href="{% url 'elu-list' %}?department={{ data.department }}&status=10">{{ data.count_refused }}</a></td>
+	    <td><a title="Élus ayant parrainé" href="{% url 'elu-list' %}?department={{ data.department }}&status=20,30">{{ data.count_accepted }}</a></td>
+	    <td><a title="Tous les élus" href="{% url 'elu-list' %}?department={{ data.department }}&sort=priority">{{ data.count_elus }}</a></td>
 	    <td>{{ data.count_users }}
 		{% if data.count_users %}
 		<a class="btn btn-sm btn-primary" data-toggle="collapse" href="#user-list-{{ data.department }}">
@@ -45,12 +47,13 @@
 	{% with data=total %}
 	<tr>
 	    <th>Total</th>
-	    <td><a href="{% url 'elu-list' %}?sort=priority">{{ data.count_elus }}</a></td>
 	    <td><a href="{% url 'elu-list' %}?status=1&sort=priority">{{ data.count_nothing }}</a></td>
 	    <td><a href="{% url 'elu-list' %}?status=2&sort=priority">{{ data.count_contacted }}</a></td>
-	    <td><a href="{% url 'elu-list' %}?status=3&sort=priority">{{ data.count_to_contact }}</a></td>
-	    <td><a href="{% url 'elu-list' %}?status=20">{{ data.count_accepted }}</a></td>
+	    <td><a href="{% url 'elu-list' %}?status=3,4&sort=priority">{{ data.count_to_contact }}</a></td>
+	    <td><a href="{% url 'elu-list' %}?status=5&sort=priority">{{ data.count_blocked }}</a></td>
 	    <td><a href="{% url 'elu-list' %}?status=10">{{ data.count_refused }}</a></td>
+	    <td><a href="{% url 'elu-list' %}?status=20,30">{{ data.count_accepted }}</a></td>
+	    <td><a href="{% url 'elu-list' %}?sort=priority">{{ data.count_elus }}</a></td>
 	    <td>{{ data.count_users }}
 	</tr>
 	{% endwith %}
