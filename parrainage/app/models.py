@@ -95,21 +95,29 @@ class Elu(models.Model):
 
     public_assign_count = models.IntegerField(default=0, db_index=True)
 
-    def __str__(self):
-        name = "{} {}".format(self.first_name, self.family_name)
+    @property
+    def display_name(self):
+        return "{} {}".format(self.first_name, self.family_name)
+
+    @property
+    def mandat(self):
         if self.role == "M":
-            name += " (Maire de {})".format(self.city)
+            return f"Maire de {self.city}"
         elif self.role == "CD":
-            name += " (Conseiller départemental {})".format(self.department)
+            return "Conseiller départemental" if self.gender == "H" else "Conseillère départementale"
         elif self.role == "CR":
-            name += " (Conseiller régional)"
+            return "Conseiller régional" if self.gender == "H" else "Conseillère régionale"
         elif self.role == "D":
-            name += " (Député)"
+            return "Député" if self.gender == "H" else "Députée"
         elif self.role == "S":
-            name += " (Sénateur)"
+            return "Sénateur" if self.gender == "H" else "Sénatrice"
         elif self.role == "DE":
-            name += " (Député européen)"
-        return name
+            return "Député européen" if self.gender == "H" else "Députée européenne"
+        else:
+            return "Autre"
+
+    def __str__(self):
+        return f"{self.display_name} ({self.mandat})"
 
     def get_absolute_url(self):
         return reverse("elu-detail", args=[str(self.id)])
