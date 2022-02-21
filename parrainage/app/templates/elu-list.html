@@ -17,6 +17,12 @@
             <option value="{{ value }}"{{ selected }}{{ disabled }}>{{ label }}</option>
             {% endfor %}
         </select>
+        <label for="sort">Trier par</label>
+        <select name="sort">
+            {% for value, label, selected, disabled in sort_keys %}
+            <option value="{{ value }}"{{ selected }}{{ disabled }}>{{ label }}</option>
+            {% endfor %}
+        </select>
         <input type="submit" value="Appliquer">
     </nav>
     {% endif %}
