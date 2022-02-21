@@ -56,8 +56,9 @@
 			<div class="form-group">
 			<label for="sort">Trier par:</label>
 			<select class="form-control" name="sort" id="sort">
+				<option value="city">Nom de la commune</option>
+				<option value="">Nom de l’élu</option>
 				<option value="priority">Priorité</option>
-				<option value="">Ordre alphabétique</option>
 				{% if user.is_authenticated %}
 				<option value="status">Statut</option>
 				{% endif %}

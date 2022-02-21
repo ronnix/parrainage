@@ -4,7 +4,7 @@ import random
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Count, Max
+from django.db.models import Q, Case, Count, Max, When
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.http import HttpResponseNotFound, HttpResponse
 from django.utils.decorators import method_decorator
@@ -150,6 +150,7 @@ class EluListView(ListView):
         context = super(EluListView, self).get_context_data(**kwargs)
         context["departments"] = self.get_departements_choices()
         context["statuses"] = self.get_status_choices()
+        context["sort_keys"] = self.get_sort_keys()
         return context
 
     def get_departements_choices(self):
@@ -190,6 +191,17 @@ class EluListView(ListView):
             ("", "---"),
         ] + list(Elu._meta.get_field("status").choices)
         return self._make_options(choices, self.request.GET.get("status"))
+
+    def get_sort_keys(self):
+        return self._make_options(
+            [
+                ("city", "Nom de la commune"),
+                ("", "Nom de l’élu"),
+                ("priority", "Priorité"),
+                ("status", "Statut"),
+            ],
+            self.request.GET.get("sort"),
+        )
 
     def _make_options(self, choices, current):
         return [
@@ -242,16 +254,19 @@ class EluListView(ListView):
         elif finished == "no":
             qs = qs.filter(status__lt=Elu.STATUS_REFUSED)
 
+        sort_keys = []
         if "sort" in self.request.GET:
             sort = self.request.GET["sort"]
             if sort == "priority":
-                qs = qs.order_by("priority", "family_name", "first_name")
+                sort_keys.append("priority")
             elif sort == "status":
-                qs = qs.order_by("status", "family_name", "first_name")
-            else:
-                qs = qs.order_by("family_name", "first_name")
-        else:
-            qs = qs.order_by("family_name", "first_name")
+                sort_keys.append("status")
+            elif sort == "city":
+                sort_keys.extend(
+                    [Case(When(role="M", then=0), default=1), "role", "city"]
+                )
+        sort_keys.extend(["family_name", "first_name"])
+        qs = qs.order_by(*sort_keys)
 
         qs = qs.annotate(Count("notes"))
         if "limit" in self.request.GET:
