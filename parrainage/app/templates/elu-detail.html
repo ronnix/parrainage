@@ -53,7 +53,8 @@
         {% endif %}
         <p><strong>Réseaux sociaux :</strong>
         <a title="Recherche sur Faceebook" href="https://www.facebook.com/search/all/?q={{ object.first_name|urlencode }}%20{{ object.family_name|urlencode }}">Facebook</a>
-        <a title="Recherche sur Twitter" href="https://twitter.com/search?f=users&q={{ object.first_name|urlencode }}%20{{ object.family_name|urlencode }}&src=typd">Twitter</a></p>
+        <a title="Recherche sur Twitter" href="https://twitter.com/search?f=users&q={{ object.first_name|urlencode }}%20{{ object.family_name|urlencode }}&src=typd">Twitter</a>
+        <a title="Recherche sur LinkedIn" href="https://www.linkedin.com/search/results/people/?keywords={{ object.first_name|urlencode }}%20{{ object.family_name|urlencode }}&sid=UFh">LinkedIn</a></p>
     </div>
     <div class="bloc extra col-xs-12 col-md-4">
         <h2>Autres infos</h2>
