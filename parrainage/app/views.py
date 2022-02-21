@@ -1,5 +1,4 @@
 import csv
-import random
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -117,40 +116,38 @@ class HomePageView(TemplateView):
     template_name = "home.html"
 
     def get_context_data(self, **kwargs):
-        context = super(HomePageView, self).get_context_data(**kwargs)
-        context["departements"] = get_department_list(self.request)
-        context["user_count"] = User.objects.count()
-        context["elus_contacted"] = Elu.objects.filter(
-            status__gt=Elu.STATUS_NOTHING
-        ).count()
-        context["elus_refused"] = Elu.objects.filter(status=Elu.STATUS_REFUSED).count()
-        context["elus_accepted"] = Elu.objects.filter(
-            status__gte=Elu.STATUS_ACCEPTED
-        ).count()
-        context["elus_responded"] = context["elus_refused"] + context["elus_accepted"]
-        context["elus_in_process"] = (
-            context["elus_contacted"] - context["elus_responded"]
-        )
-
-        if not self.request.user.is_authenticated():
-            assigned_elu = self.request.COOKIES.get("assigned_elu")
-            if assigned_elu:
-                try:
-                    context["my_elu"] = Elu.objects.get(pk=int(assigned_elu))
-                except:
-                    pass
-            return context
-
-        context["my_elus"] = get_assigned_elus(self.request.user)
-
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated():
+            context["departements"] = get_department_list(self.request)
+            context["user_count"] = User.objects.count()
+            context["elus_contacted"] = Elu.objects.filter(
+                status__gt=Elu.STATUS_NOTHING
+            ).count()
+            context["elus_refused"] = Elu.objects.filter(
+                status=Elu.STATUS_REFUSED
+            ).count()
+            context["elus_accepted"] = Elu.objects.filter(
+                status__gte=Elu.STATUS_ACCEPTED
+            ).count()
+            context["elus_responded"] = (
+                context["elus_refused"] + context["elus_accepted"]
+            )
+            context["elus_in_process"] = (
+                context["elus_contacted"] - context["elus_responded"]
+            )
+            context["my_elus"] = get_assigned_elus(self.request.user)
         return context
 
 
 class EluListView(ListView):
     template_name = "elu-list.html"
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
-        context = super(EluListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["departments"] = self.get_departements_choices()
         context["statuses"] = self.get_status_choices()
         context["sort_keys"] = self.get_sort_keys()
@@ -282,8 +279,12 @@ class EluDetailView(DetailView):
     queryset = Elu.objects.all()
     template_name = "elu-detail.html"
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
-        context = super(EluDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         if not self.request.user.is_authenticated():
             assigned_elu = self.request.COOKIES.get("assigned_elu")
             if str(assigned_elu) == str(context["object"].id):
@@ -340,6 +341,10 @@ class EluDetailView(DetailView):
 
 
 class EluCSVForMap(View):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         qs = Elu.objects.exclude(city_latitude="").exclude(city_longitude="")
         status = request.GET.get("status", "")
@@ -395,10 +400,10 @@ class UserDetailView(DetailView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(UserDetailView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(UserDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         del context["user"]  # Avoid override of authenticated user
         if self.request.user.is_authenticated():
             context["assigned_elus"] = get_assigned_elus(
@@ -431,10 +436,10 @@ class DepartmentRankingView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(DepartmentRankingView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(DepartmentRankingView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         qs = Elu.objects.filter(status__gt=Elu.STATUS_NOTHING)
         qs = qs.values_list("department", "status")
@@ -459,10 +464,10 @@ class UserRankingView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(UserRankingView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(UserRankingView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         # Initialize user list with easy counts
         users = {}
@@ -504,10 +509,10 @@ class DepartmentSynopticView(TemplateView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(DepartmentSynopticView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(DepartmentSynopticView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         stats = get_department_data()
 
@@ -569,60 +574,5 @@ class EluCSVForMailing(View):
                     elu.private_token,
                 ]
             )
-
-        return response
-
-
-class PublicAssignation(View):
-    def select_elu(self):
-        which_one = random.randint(0, 99)
-        try:
-            elu = (
-                Elu.objects.exclude(public_phone="")
-                .exclude(status__gte=Elu.STATUS_REFUSED)
-                .filter(role="M")
-                .filter(city_size__lt=5000)
-                .order_by("public_assign_count", "priority")[which_one]
-            )
-            return elu
-        except IndexError:
-            return None
-
-    def get(self, request, *args, **kwargs):
-        assigned_elu = request.COOKIES.get("assigned_elu", request.GET.get("elu_id"))
-        action = request.GET.get("action", "assign")
-        if action == "unassign" and assigned_elu:
-            try:
-                elu = Elu.objects.get(pk=int(assigned_elu))
-                elu.public_assign_count = elu.public_assign_count - 1
-                elu.save()
-            except:
-                pass
-            response = HttpResponseRedirect("/")
-            response.delete_cookie("assigned_elu")
-        elif action == "assign":
-            forcenew = request.GET.get("forcenew")
-            if assigned_elu and not forcenew:
-                try:
-                    elu = Elu.objects.get(pk=int(assigned_elu))
-                except:
-                    elu = None
-            else:
-                elu = self.select_elu()
-                if elu:
-                    elu.public_assign_count += 1
-                    elu.save()
-
-            if not elu:
-                return HttpResponseRedirect("/")
-
-            redirect_url = "{}?{}".format(
-                reverse("elu-detail", kwargs={"pk": elu.id}),
-                urlencode({"assigned": 1}),
-            )
-            response = HttpResponseRedirect(redirect_url)
-            response.set_cookie("assigned_elu", elu.id, max_age=2592000)
-        else:
-            response = HttpResponseRedirect("/")
 
         return response

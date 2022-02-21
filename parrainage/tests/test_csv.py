@@ -6,6 +6,16 @@ import pytest
 
 
 @pytest.fixture
+def logged_in_user(client):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(
+        username="test", email="test@example.com", password="secret"
+    )
+    client.login(username="test", password="secret")
+
+
+@pytest.fixture
 def elus():
     return [
         make_elu(
@@ -47,7 +57,14 @@ def make_elu(**kwargs):
 
 
 @pytest.mark.django_db
-def test_csv_empty(client):
+def test_csv_forbidden(client):
+    resp = client.get("/csv/")
+    assert resp.status_code == 302
+    assert resp["Location"] == "/login/?next=/csv/"
+
+
+@pytest.mark.django_db
+def test_csv_empty(client, logged_in_user):
     resp = client.get("/csv/")
     assert resp.status_code == 200
     rows = list(csv.DictReader(resp.content.decode("utf-8").splitlines()))
@@ -55,7 +72,7 @@ def test_csv_empty(client):
 
 
 @pytest.mark.django_db
-def test_csv_all(client, elus):
+def test_csv_all(client, logged_in_user, elus):
     resp = client.get("/csv/")
     assert resp.status_code == 200
     rows = list(csv.DictReader(resp.content.decode("utf-8").splitlines()))
@@ -69,7 +86,7 @@ def test_csv_all(client, elus):
 
 
 @pytest.mark.django_db
-def test_csv_done(client, elus):
+def test_csv_done(client, logged_in_user, elus):
     resp = client.get("/csv/?status=done")
     assert resp.status_code == 200
     rows = list(csv.DictReader(resp.content.decode("utf-8").splitlines()))
@@ -82,7 +99,7 @@ def test_csv_done(client, elus):
 
 
 @pytest.mark.django_db
-def test_csv_accepted(client, elus):
+def test_csv_accepted(client, logged_in_user, elus):
     resp = client.get("/csv/?status=accepted")
     assert resp.status_code == 200
     rows = list(csv.DictReader(resp.content.decode("utf-8").splitlines()))
