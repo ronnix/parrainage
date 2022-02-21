@@ -10,6 +10,8 @@ click==8.0.3
     # via pip-tools
 colorama==0.4.4
     # via pytest-watch
+cython==0.29.28
+    # via selectolax
 docopt==0.6.2
     # via pytest-watch
 importlib-metadata==4.11.1
@@ -40,6 +42,8 @@ pytest==7.0.1
 pytest-django==4.5.2
     # via -r requirements-dev.in
 pytest-watch==4.2.0
+    # via -r requirements-dev.in
+selectolax==0.3.6
     # via -r requirements-dev.in
 tabview==1.4.4
     # via -r requirements-dev.in

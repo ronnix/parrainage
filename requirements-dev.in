@@ -3,5 +3,6 @@ pip-tools
 pytest
 pytest-django
 pytest-watch
+selectolax
 watchdog
 tabview

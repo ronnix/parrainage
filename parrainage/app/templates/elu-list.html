@@ -9,7 +9,6 @@
     <form method="GET" action="">
         Filtrer
         <select name="department">
-            <option value="">Tous les départements</option>
             {% for value, label, selected, disabled in departments %}
             <option value="{{ value }}"{{ selected }}{{ disabled }}>{{ label }}</option>
             {% endfor %}
@@ -30,37 +29,41 @@
     {% endif %}
 
     <table class="table table-bordered table-hover table-sm">
-    <tr>
-        <th>#</th>
-        <th>Élu(e)</th>
-        <th>Mandat</th>
-        {% if 'department' not in request.GET %}
-        <th>Dép.</th>
-        {% endif %}
-        <th>Téléphone</th>
-        <th>Statut</th>
-        {% if user.is_authenticated %}
-        <th title="Nombre de notes dans l'historique">N</th>
-        <th>Assigné à</th>
-        {% endif %}
-    </tr>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Élu(e)</th>
+                <th>Mandat</th>
+                {% if 'department' not in request.GET %}
+                <th>Dép.</th>
+                {% endif %}
+                <th>Téléphone</th>
+                <th>Statut</th>
+                {% if user.is_authenticated %}
+                <th title="Nombre de notes dans l'historique">N</th>
+                <th>Assigné à</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
         {% for elu in object_list %}
-    <tr>
-        <td>{{ forloop.counter }}.</td>
-        <td><a href="{{ elu.get_absolute_url }}">{{ elu.display_name }}</a></td>
-        <td><a href="{{ elu.get_absolute_url }}">{{ elu.mandat }}</a></td>
-        {% if 'department' not in request.GET %}
-        <td>{{ elu.department }}</td>
-        {% endif %}
-        <td>{{ elu.public_phone }}</td>
-        {% if user.is_authenticated %}
-        <td>{{ elu.get_status_display }}</td>
-        <td>{% if elu.notes__count %}{{ elu.notes__count }}{% endif %}</td>
-        <td>{% include 'userlink.html' with u=elu.assigned_to %}</td>
-        {% else %}
-        <td>{{ elu.get_public_status_display }}</td>
-        {% endif %}
-    </tr>
+            <tr>
+                <td>{{ forloop.counter }}.</td>
+                <td><a href="{{ elu.get_absolute_url }}">{{ elu.display_name }}</a></td>
+                <td><a href="{{ elu.get_absolute_url }}">{{ elu.mandat }}</a></td>
+                {% if 'department' not in request.GET %}
+                <td>{{ elu.department }}</td>
+                {% endif %}
+                <td>{{ elu.public_phone }}</td>
+                {% if user.is_authenticated %}
+                <td>{{ elu.get_status_display }}</td>
+                <td>{% if elu.notes__count %}{{ elu.notes__count }}{% endif %}</td>
+                <td>{% include 'userlink.html' with u=elu.assigned_to %}</td>
+                {% else %}
+                <td>{{ elu.get_public_status_display }}</td>
+                {% endif %}
+            </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

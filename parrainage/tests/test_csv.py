@@ -1,59 +1,6 @@
 import csv
 
-from parrainage.app.models import Elu
-
 import pytest
-
-
-@pytest.fixture
-def logged_in_user(client):
-    from django.contrib.auth.models import User
-
-    user = User.objects.create_user(
-        username="test", email="test@example.com", password="secret"
-    )
-    client.login(username="test", password="secret")
-
-
-@pytest.fixture
-def elus():
-    return [
-        make_elu(
-            first_name="Alice",
-            family_name="Dupont",
-            city="Ici",
-            status=Elu.STATUS_ACCEPTED,
-        ),
-        make_elu(
-            first_name="Bob",
-            family_name="Durand",
-            city="Là-bas",
-            status=Elu.STATUS_REFUSED,
-        ),
-        make_elu(
-            first_name="Charlie",
-            family_name="Martin",
-            city="Ailleurs",
-            status=Elu.STATUS_RECEIVED,
-        ),
-        make_elu(
-            first_name="Doriane",
-            family_name="Grès",
-            city="Quelque part",
-            status=Elu.STATUS_CONTACTED,
-        ),
-    ]
-
-
-def make_elu(**kwargs):
-    elu = Elu(
-        role="M",
-        city_latitude=42,
-        city_longitude=8,
-        **kwargs,
-    )
-    elu.save()
-    return elu
 
 
 @pytest.mark.django_db
@@ -80,8 +27,11 @@ def test_csv_all(client, logged_in_user, elus):
     assert names == {
         "Alice Dupont (Maire de Ici)",
         "Bob Durand (Maire de Là-bas)",
+        "Célina de la Bonneau (Maire de Delorme-les-Bains)",
         "Charlie Martin (Maire de Ailleurs)",
+        "Diane Lecoq (Maire de Guillou-la-Forêt)",
         "Doriane Grès (Maire de Quelque part)",
+        "Marcel Martel (Maire de Brunelnec)",
     }
 
 

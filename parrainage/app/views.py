@@ -30,7 +30,7 @@ def get_assigned_elus(user, exclude_finished=True):
 
 
 def get_department_list(request):
-    result = list(
+    departments = set(
         Elu.objects.only("department")
         .exclude(department="")
         .values_list("department", flat=True)
@@ -42,8 +42,8 @@ def get_department_list(request):
         and hasattr(request.user, "settings")
         and request.user.settings.department
     ):
-        result.insert(0, request.user.settings.department)
-    return result
+        departments.add(request.user.settings.department)
+    return list(sorted(departments))
 
 
 def get_department_data():
@@ -154,7 +154,10 @@ class EluListView(ListView):
         return context
 
     def get_departements_choices(self):
-        choices = [(str(dpt), str(dpt)) for dpt in get_department_list(self.request)]
+        choices = [
+            ("tous", "Tous les départements"),
+            ("", "---"),
+        ] + [(str(dpt), str(dpt)) for dpt in get_department_list(self.request)]
         return self._make_options(choices, self.request.GET.get("department"))
 
     def get_status_choices(self):
@@ -226,8 +229,9 @@ class EluListView(ListView):
                 if all(status in allowed_values for status in statuses):
                     qs = qs.filter(status__in=[int(status) for status in statuses])
 
-        if "department" in self.request.GET:
-            qs = qs.filter(department=self.request.GET["department"])
+        department = self.request.GET.get("department", "tous")
+        if department != "tous":
+            qs = qs.filter(department=department)
 
         if "gender" in self.request.GET:
             qs = qs.filter(gender=self.request.GET["gender"])
