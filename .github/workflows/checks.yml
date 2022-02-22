@@ -43,10 +43,20 @@ jobs:
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/601ef073-d986-4582-8e1a-ed14dc857fba
           python manage.py import_elus --mandat=CD rne-cd.csv
 
+      - name: Test de l’import des conseillers de Paris
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/d5f400de-ae3f-4966-8cb6-a85c70c6c24a
+          python manage.py import_elus --mandat=CP rne-cm.csv
+
       - name: Test de l’import des conseillers départementaux
         run: |
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/430e13f9-834b-4411-a1a8-da0b4b6e715c
           python manage.py import_elus --mandat=CR rne-cr.csv
+
+      - name: Test de l’import des élus des collectivités à statut particulier
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/a595be27-cfab-4810-b9d4-22e193bffe35
+          python manage.py import_elus --mandat=SP rne-ma.csv
 
       - name: Test de l’import des présidents de communautés de communes
         run: |
