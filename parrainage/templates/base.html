@@ -22,16 +22,16 @@
 				<a href="/"><img id="logo" src="{% static 'img/logo-small.png' %}" alt="Taubira pour 2022"/></a>
 		    </div>
 			<div class="title">
-		    {% block page-header-title %}	
+		    {% block page-header-title %}
 		    <h1>Recherche de parrainages</h1>
 		    {% endblock %}
 			</div>
-		    <div>
-		    {% block page-header-right %}
-		    <a href="/">Accueil</a> |
-		    {% include 'user-widget.html' %}
-		    {% endblock %}
-		    </div>
+		    <nav>
+		      {% block page-header-right %}
+		      <a href="/">Accueil</a> |
+		      {% include 'user-widget.html' %}
+		      {% endblock %}
+		    </nav>
 		</div>
 		</div>
                 {% endblock %}
