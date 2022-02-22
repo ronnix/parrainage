@@ -38,6 +38,16 @@ jobs:
           unzip ensemble.zip
           python manage.py import_maires rne-maires.csv mairies.csv donnees_communes.csv
 
+      - name: Test de l’import des maires délégués
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/d5f400de-ae3f-4966-8cb6-a85c70c6c24a
+          python manage.py import_elus --mandat=MD rne-cm.csv
+
+      - name: Test de l’import des présidents de communautés de communes
+        run: |
+          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/41d95d7d-b172-4636-ac44-32656367cdc7
+          python manage.py import_elus --mandat=CC rne-epci.csv
+
       - name: Test de l’import des conseillers départementaux
         run: |
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/601ef073-d986-4582-8e1a-ed14dc857fba
@@ -45,7 +55,6 @@ jobs:
 
       - name: Test de l’import des conseillers de Paris
         run: |
-          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/d5f400de-ae3f-4966-8cb6-a85c70c6c24a
           python manage.py import_elus --mandat=CP rne-cm.csv
 
       - name: Test de l’import des conseillers régionaux
@@ -57,11 +66,6 @@ jobs:
         run: |
           wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/a595be27-cfab-4810-b9d4-22e193bffe35
           python manage.py import_elus --mandat=SP rne-ma.csv
-
-      - name: Test de l’import des présidents de communautés de communes
-        run: |
-          wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/41d95d7d-b172-4636-ac44-32656367cdc7
-          python manage.py import_elus --mandat=CC rne-epci.csv
 
       - name: Test de l’import des sénateurs
         run: |
