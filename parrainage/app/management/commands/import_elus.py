@@ -20,6 +20,7 @@ MANDAT = {
     "D": "Député",
     "DE": "Député européen",
     "S": "Sénateur",
+    "SP": "Membre de l’assemblée d’une collectivité à statut particulier",
 }
 
 
@@ -35,7 +36,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--mandat",
             help="Type de mandat",
-            choices=["CD", "CR", "CC", "S", "D", "DE"],
+            choices=["CC", "CD", "CR", "D", "DE", "S", "SP"],
             required=True,
         )
 
@@ -45,14 +46,13 @@ class Command(BaseCommand):
         nb_elus_mis_a_jour = 0
         for _, row in charge_rne(kwargs["csvfile"]).iterrows():
             mandat = kwargs["mandat"]
+            fonction = row.get("Libellé de la fonction", "")
 
             # Seuls les présidents pour les communautés de communes
-            if mandat == "CC" and (
-                row["Libellé de la fonction"] != "Président du conseil communautaire"
-            ):
+            if mandat == "CC" and fonction != "Président du conseil communautaire":
                 continue
 
-            elu = parse_elu(row, role="A" if mandat == "CC" else mandat)
+            elu = parse_elu(row, role="A" if mandat in ("CC", "SP") else mandat)
             try:
                 elu_existant = Elu.objects.get(
                     first_name=elu.first_name,
@@ -63,11 +63,15 @@ class Command(BaseCommand):
                     continue
                 else:
                     annotation = f"\nAutre mandat: {MANDAT[mandat]}"
+                    if fonction:
+                        annotation += f"({fonction})"
                     if annotation not in elu_existant.comment:
                         elu_existant.comment += annotation
                         elu_existant.save()
                         nb_elus_mis_a_jour += 1
             except Elu.DoesNotExist:
+                if fonction:
+                    elu.comment += f"\n{fonction}"
                 nouveaux_elus.append(elu)
             except Elu.MultipleObjectsReturned:
                 logging.error(

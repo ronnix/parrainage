@@ -60,7 +60,7 @@
         <h2>Autres infos</h2>
         <p><strong>Date de naissance :</strong> {{ object.birthdate }} ({{ object.birthdate|timesince }})<br/>
         <strong>Couleur politique de sa liste :</strong> {{ object.nuance_politique|default:"inconnue" }}<br/>
-            <strong>Commentaires:</strong> {{ object.comment }}<br/>
+            <strong>Commentaires:</strong> {{ object.comment|linebreaksbr }}<br/>
         <strong>Mandat :</strong> {{ object.get_role_display }}<br/>
         {% if object.city %}
         <strong>Commune :</strong> {{ object.city }}<br/>

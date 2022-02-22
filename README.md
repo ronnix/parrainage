@@ -86,6 +86,18 @@ wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/430e13f9-834b-
 python manage.py import_elus --mandat=CR rne-cr.csv
 ```
 
+#### Liste des élus des collectivités à statut particulier
+
+- Récupérer `rne-ma.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/a595be27-cfab-4810-b9d4-22e193bffe35
+```
+
+- Lancer la commande :
+```
+python manage.py import_elus --mandat=SP rne-ma.csv
+```
+
 #### Liste des présidents de communautés de communes
 
 - Récupérer `rne-epci.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
