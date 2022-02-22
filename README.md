@@ -74,6 +74,18 @@ wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/601ef073-d986-
 python manage.py import_elus --mandat=CD rne-cd.csv
 ```
 
+#### Liste des conseillers de Paris
+
+- Récupérer `rne-cm.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/d5f400de-ae3f-4966-8cb6-a85c70c6c24a
+```
+
+- Lancer la commande :
+```
+python manage.py import_elus --mandat=CP rne-cm.csv
+```
+
 #### Liste des conseillers régionaux
 
 - Récupérer `rne-cr.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
