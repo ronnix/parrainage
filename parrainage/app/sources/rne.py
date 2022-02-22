@@ -34,7 +34,7 @@ def parse_elu(row, role):
         comment="Catégorie socio-professionnelle: {}".format(
             row["Libellé de la catégorie socio-professionnelle"]
         ),
-        department=row.get("Code du département", ""),
+        department=row.get("Code du département", "") or row.get("Code de la collectivité à statut particulier", ""),
         city=row.get(
             "Libellé de la commune",
             row.get("Libellé de la commune de rattachement", ""),
