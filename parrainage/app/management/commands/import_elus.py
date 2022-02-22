@@ -16,6 +16,7 @@ from parrainage.app.sources.rne import charge_rne, parse_elu
 MANDAT = {
     "CC": "Président de communauté de communes",
     "CD": "Conseiller départemental",
+    "CP": "Conseiller de Paris",
     "CR": "Conseiller régional",
     "D": "Député",
     "DE": "Député européen",
@@ -36,7 +37,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--mandat",
             help="Type de mandat",
-            choices=["CC", "CD", "CR", "D", "DE", "S", "SP"],
+            choices=["CC", "CD", "CP", "CR", "D", "DE", "S", "SP"],
             required=True,
         )
 
@@ -48,11 +49,25 @@ class Command(BaseCommand):
             mandat = kwargs["mandat"]
             fonction = row.get("Libellé de la fonction", "")
 
-            # Seuls les présidents pour les communautés de communes
+            # Seulement les présidents pour les communautés de communes
             if mandat == "CC" and fonction != "Président du conseil communautaire":
                 continue
 
-            elu = parse_elu(row, role="A" if mandat in ("CC", "SP") else mandat)
+            # Seulement Paris pour les conseillers municipaux
+            if mandat == "CP" and row["Code du département"] != "75":
+                continue
+
+            # Pas de code rôle pour les présidents de communauté de communes, ni pour
+            # les élus de collectivités à statut particulier
+            if mandat in ("CC", "SP"):
+                role = "A"
+            # Le Conseil de Paris a les responsabilités d’un conseil départemental
+            elif mandat == "CP":
+                role = "CD"
+            else:
+                role = mandat
+
+            elu = parse_elu(row, role)
             try:
                 elu_existant = Elu.objects.get(
                     first_name=elu.first_name,
