@@ -62,6 +62,32 @@ unzip ensemble.zip
 python manage.py import_maires rne-maires.csv mairies.csv donnees_communes.csv
 ```
 
+#### Liste des maires délégués
+
+- Récupérer `rne-cm.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/d5f400de-ae3f-4966-8cb6-a85c70c6c24a
+```
+
+- Lancer la commande :
+```
+python manage.py import_elus --mandat=MD rne-cm.csv
+```
+
+
+#### Liste des présidents de communautés de communes
+
+- Récupérer `rne-epci.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+```
+wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/41d95d7d-b172-4636-ac44-32656367cdc7
+```
+
+- Lancer la commande :
+```
+python manage.py import_elus --mandat=CC rne-epci.csv
+```
+
+
 #### Liste des conseillers départementaux
 
 - Récupérer `rne-cd.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
@@ -76,7 +102,7 @@ python manage.py import_elus --mandat=CD rne-cd.csv
 
 #### Liste des conseillers de Paris
 
-- Récupérer `rne-cm.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
+- Récupérer (si ce n’est déjà fait) `rne-cm.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
 ```
 wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/d5f400de-ae3f-4966-8cb6-a85c70c6c24a
 ```
@@ -109,19 +135,6 @@ wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/a595be27-cfab-
 ```
 python manage.py import_elus --mandat=SP rne-ma.csv
 ```
-
-#### Liste des présidents de communautés de communes
-
-- Récupérer `rne-epci.csv` depuis https://www.data.gouv.fr/fr/datasets/repertoire-national-des-elus-1/
-```
-wget --content-disposition https://www.data.gouv.fr/fr/datasets/r/41d95d7d-b172-4636-ac44-32656367cdc7
-```
-
-- Lancer la commande :
-```
-python manage.py import_elus --mandat=CC rne-epci.csv
-```
-
 
 #### Liste des sénateurs
 

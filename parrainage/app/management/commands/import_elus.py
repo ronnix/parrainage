@@ -20,6 +20,7 @@ MANDAT = {
     "CR": "Conseiller régional",
     "D": "Député",
     "DE": "Député européen",
+    "MD": "Maire délégué",
     "S": "Sénateur",
     "SP": "Membre de l’assemblée d’une collectivité à statut particulier",
 }
@@ -37,7 +38,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--mandat",
             help="Type de mandat",
-            choices=["CC", "CD", "CP", "CR", "D", "DE", "S", "SP"],
+            choices=["CC", "CD", "CP", "CR", "D", "DE", "MD", "S", "SP"],
             required=True,
         )
 
@@ -57,6 +58,10 @@ class Command(BaseCommand):
             if mandat == "CP" and row["Code du département"] != "75":
                 continue
 
+            # Seulement les maires délégués pour les conseillers municipaux
+            if mandat == "MD" and fonction != "Maire délégué":
+                continue
+
             # Pas de code rôle pour les présidents de communauté de communes, ni pour
             # les élus de collectivités à statut particulier
             if mandat in ("CC", "SP"):
@@ -64,6 +69,8 @@ class Command(BaseCommand):
             # Le Conseil de Paris a les responsabilités d’un conseil départemental
             elif mandat == "CP":
                 role = "CD"
+            elif mandat == "MD":
+                role = "M"
             else:
                 role = mandat
 
