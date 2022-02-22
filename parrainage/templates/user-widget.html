@@ -1,7 +1,7 @@
 {% if user.is_authenticated %}
-    {% include 'userlink.html' with u=user text='Mon profil' %}
+    {% include 'userlink.html' with u=user text=user.get_full_name %}
     |
-    <span><a id="account-logout" href="{% url 'logout' %}?next=/">Se déconnecter</a></span>
+    <a id="account-logout" href="{% url 'logout' %}?next=/">Se déconnecter</a>
 {% else %}
-<span><a id="account-login" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Se connecter</a></span>
+    <a id="account-login" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Se connecter</a>
 {% endif %}
