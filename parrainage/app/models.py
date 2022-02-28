@@ -57,10 +57,10 @@ class Elu(models.Model):
         verbose_name="genre", max_length=1, choices=GENDER_CHOICES, blank=True
     )
     birthdate = models.DateField(blank=True, null=True)
-    role = models.CharField(max_length=2, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=2, choices=ROLE_CHOICES, db_index=True)
     comment = models.TextField(blank=True)
 
-    priority = models.IntegerField(default=500)
+    priority = models.IntegerField(default=500, db_index=True)
 
     public_email = models.CharField(max_length=255, blank=True)
     public_phone = models.CharField(max_length=255, blank=True)
